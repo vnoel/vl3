@@ -66,7 +66,7 @@ class ImagePlotController(Handler):
     def about_dialog(self, ui_info):
         
         img = ImageResource('about', search_path=[os.getcwd()+'/', './'])
-        text=['VL3 - View Lidar 3\n', u'Copyright © VNoel 2001-2011 - LMD/CNRS/IPSL\n', 
+        text=['VL3 - View Lidar 3 - v0.1\n', u'Copyright © VNoel 2001-2011 - LMD/CNRS/IPSL\n', 
             'Based on input and help from M. Chiriaco, A. Delaval, Y. Morille.',
             'Based on the Enthought Tool Suite (ETS)']
         dlg = AboutDialog(parent=ui_info.ui.control, additions=text, image=img)
@@ -85,7 +85,6 @@ if __name__ == '__main__':
         yagfile = sys.argv[1]
     else:
         yagfile = None
-        # yagfile = 'test_data/'
     
     imageapp = ImagePlot(yagfile)
     controller = ImagePlotController(view=imageapp)

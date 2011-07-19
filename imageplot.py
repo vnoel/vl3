@@ -40,7 +40,6 @@ def add_date_axis(plot):
     plot.underlays.append(bottom_axis)
 
 
-
 class ImagePlot(HasTraits):
     
     data_source = ''
