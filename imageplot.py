@@ -30,7 +30,7 @@ from pyface.api import MessageDialog, ImageResource
 import matplotlib.dates as mdates
 
 import yag
-from profile import ProfilePlot
+from profile import ProfilePlot, ProfileController
 
 cmap_change_factor = 1.5
 
@@ -253,12 +253,13 @@ class ImagePlot(HasTraits):
         if self.profileplot is None:
             profile_data = self._profile_data(0)
             self.profileplot = ProfilePlot(self, profiledata=profile_data, alt=self.alt, profname=0)
+            self.profilecontroller = ProfileController(view=self.profileplot)
 
             # Add line inspector  
             self.line_inspector = self.img.overlays.append(LineInspector(self.img, axis='index_x', inspect_mode='indexed',
                                         write_metadata=True, is_listener=False, is_interactive=True, color='white'))
             self.img.index.on_trait_change(self._metadata_changed, 'metadata_changed')
-            self.profileplot.configure_traits()
+            self.profileplot.configure_traits(handler=self.profilecontroller)
         
         
     def _reset_zoom_fired(self):

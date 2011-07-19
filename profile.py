@@ -10,18 +10,11 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import numpy as np
 import chaco.api as chaco
 
-from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
+from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str, Any
 from traitsui.api import Item, UItem, View, HGroup, VGroup, Handler
 from enable.api import ComponentEditor
 
 
-class ProfileHandler(Handler):
-    def close(self, info, is_ok):
-        if info.object.parent is not None:
-            info.object.parent.profileplot = None
-        # info.object.parent.img.overlays.remove(info.object.parent.line_inspector)
-        return Handler.close(self, info, is_ok)
-    
 class ProfilePlot(HasTraits):
     
     profileplot = Instance(chaco.Plot)
@@ -32,7 +25,6 @@ class ProfilePlot(HasTraits):
         ),
         resizable=True,
         title='Profile',
-        handler=ProfileHandler
     )
         
     def __init__(self, parent, profiledata=None, alt=None, profname=None):
@@ -40,6 +32,7 @@ class ProfilePlot(HasTraits):
         self.data = chaco.ArrayPlotData()
         self.data.set_data('value', [])
         self.data.set_data('index', [])
+        self.closeme = False
         
         plot = chaco.Plot(self.data, orientation='v')
         plot.plot(('index', 'value'), name='profile')
@@ -58,8 +51,23 @@ class ProfilePlot(HasTraits):
         self.data.set_data('value', profiledata)
         self.profiledata = profiledata
         self.profileplot.title = 'Profile ' + str(profname)
-                
-                
+
+        
+class ProfileController(Handler):
+
+    view = Instance(ProfilePlot)
+
+    def init(self, info):
+        self.view = info.object
+
+    def close(self, info, is_ok):
+        if self.view.parent is not None:
+            self.view.parent.profileplot = None
+        # info.object.parent.img.overlays.remove(info.object.parent.line_inspector)
+        return Handler.close(self, info, is_ok)       
+
+
+
 if __name__ == '__main__':
     '''
     Show some stuff as a test
