@@ -75,7 +75,7 @@ class ImagePlotController(Handler):
     def close(self, info, is_ok):
         print 'Log: Closing'
         if self.view.profileplot is not None:
-            del self.view.profileplot
+            self.view.profileplot.close()
         return Handler.close(self, info, is_ok)
     
         

@@ -25,7 +25,7 @@ from traitsui.api import Item, UItem, View, HGroup, VGroup, Handler
 from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
-from pyface.api import MessageDialog
+from pyface.api import MessageDialog, ImageResource
 
 import matplotlib.dates as mdates
 
@@ -46,6 +46,8 @@ class ImagePlot(HasTraits):
     data_source = ''
     data_list = List([])
     plot_title = Str('')
+    
+    icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './'])
     
     data_type = Enum('Backscatter', 'Ratio')
     
@@ -93,6 +95,7 @@ class ImagePlot(HasTraits):
         ),
         resizable=True,
         title='View Lidar 3',
+        icon=icon_img
     )
     
     
