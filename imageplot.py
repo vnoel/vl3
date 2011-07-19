@@ -96,7 +96,7 @@ class ImagePlot(HasTraits):
     )
     
     
-    def __init__(self, lna_folder=None):
+    def __init__(self, lna_source=None):
         
         self.pcolor = None
         self.pcolor_data = None
@@ -105,12 +105,11 @@ class ImagePlot(HasTraits):
         self.directory_to_load = os.getcwd()
         self.save_image_file = os.getcwd()
 
-        if lna_folder:
-            self.open_data(lna_folder=lna_folder)
-            # self.data = yag.nc_read(lna_file)        
+        if lna_source:
+            self.open_data(lna_source)
         
         
-    def open_data(self, lna_source=None):
+    def open_data(self, lna_source):
         
         if lna_source is None:
             return
@@ -314,6 +313,6 @@ if __name__ == '__main__':
         sys.exit('Usage: imageplot.py lna_source')
         
     lna_source = sys.argv[1]
-    imageplot = ImagePlot(lna_folder=lna_source)
+    imageplot = ImagePlot(lna_source=lna_source)
     imageplot.configure_traits()
     

@@ -30,7 +30,7 @@ class ImagePlotController(Handler):
         fd = dlg(action='open', default_path=self.view.directory_to_load)
         if fd.open() == OK:
             print 'Opening ', fd.path
-            self.view.open_data(lna_source=fd.path)
+            self.view.open_data(fd.path)
         
 
     def open_dir(self, ui_info):
@@ -58,7 +58,7 @@ class ImagePlotController(Handler):
         
     def new_view(self, ui_info):
         print 'Log: New view'
-        image = ImagePlot(lna_folder=self.view.data_source)
+        image = ImagePlot(lna_source=self.view.data_source)
         controller = ImagePlotController(view=image)
         image.configure_traits(handler=controller)
 

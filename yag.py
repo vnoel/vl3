@@ -65,11 +65,11 @@ def data_regrid_time(time, data):
 def open_source(lna_source):
     
     if os.path.isdir(lna_source):
-        yagdata = nc_folder_read(lna_source)
+        lna_data = nc_folder_read(lna_source)
     else:
-        yagdata = nc_read(lna_source)
+        lna_data = nc_read(lna_source)
         
-    return yagdata
+    return lna_data
 
 def nc_folder_read(yagfolder):
     files = glob.glob(yagfolder + '/*.nc')
@@ -77,11 +77,11 @@ def nc_folder_read(yagfolder):
     fulldata = None
     for f in files:
         print 'Reading ', f
-        yagdata = nc_read(f)
-        time = yagdata['time']
-        alt = yagdata['alt']
-        data = yagdata['data']
-        date = yagdata['date']
+        lna_data = nc_read(f)
+        time = lna_data['time']
+        alt = lna_data['alt']
+        data = lna_data['data']
+        date = lna_data['date']
         
         if fulldata is None:
             fulldata = data
@@ -95,9 +95,9 @@ def nc_folder_read(yagfolder):
         return None
         
     fulltime, fulldata = data_regrid_time(fulltime, fulldata)
-    fullyagdata = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date}
+    fulllna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date}
             
-    return fullyagdata
+    return fulllna_data
     
     
 def depol(para, perp):
@@ -152,10 +152,10 @@ def nc_read(yagfile):
     data['p7: Depolarization Ratio 532nm NFOV'] = depol(nc.variables['p1'][:], nc.variables['p2'][:])
     data['p8: Depolarization Ratio 532nm WFOV'] = depol(nc.variables['p4'][:], nc.variables['p5'][:])
 
-    yagdata = {'time':time, 'alt':alt, 'data':data, 'date':date}
+    lna_data = {'time':time, 'alt':alt, 'data':data, 'date':date}
     nc.close()
     
-    return yagdata
+    return lna_data
     
 
 import unittest
@@ -164,14 +164,14 @@ class test(unittest.TestCase):
     
     def test_nprof(self):
         ncfile = 'test_data/lna_1a_PR2_v02_20040319_080000_60.nc'
-        yagdata = nc_read(ncfile)
-        time = yagdata['time']
+        lna_data = nc_read(ncfile)
+        time = lna_data['time']
         self.assertEqual(np.shape(time)[0], 27)
         
     def test_nalt(self):
         ncfile = 'test_data/lna_1a_PR2_v02_20040319_080000_60.nc'
-        yagdata = nc_read(ncfile)
-        alt = yagdata['alt']
+        lna_data = nc_read(ncfile)
+        alt = lna_data['alt']
         self.assertEqual(np.shape(alt)[0], 1024)
         
 
