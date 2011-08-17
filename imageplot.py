@@ -29,7 +29,7 @@ from pyface.api import MessageDialog, ImageResource
 
 import matplotlib.dates as mdates
 
-import yag
+import lna
 from profile import ProfilePlot, ProfileController
 
 cmap_change_factor = 1.5
@@ -117,7 +117,7 @@ class ImagePlot(HasTraits):
             return
             
         print 'Log: opening ', lna_source
-        yagdata = yag.open_source(lna_source)
+        yagdata = lna.open_source(lna_source)
 
         if yagdata is None:
             msg = MessageDialog(message="No LNA data found in this folder.", severity='warning', title='Problem')

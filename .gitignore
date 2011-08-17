@@ -1,1 +1,3 @@
 *.pyc
+legacy
+test_data
