@@ -129,7 +129,7 @@ def lna_binary_file_read(lnafile):
     cr = ratio(total532, data['p2 - Range-Corrected Backscatter 1064nm '+fov])
     data['p5 - Color Ratio 1064nm / 532nm ' + fov] = cr
     
-    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary', 'fov':fov}
+    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary'}
         
     return lna_data
     
