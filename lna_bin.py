@@ -136,7 +136,7 @@ def lna_binary_file_read(lnafile):
     
 def lna_bin_read(lnafile, debug=False):
     """
-    Reads all the data from a LNA file, in binary format.
+    Reads all the data from a SIRTA LNA binary file.
     parameters:
         lnafile - name of the LNA data file
         debug - if True, prints out information durin read
