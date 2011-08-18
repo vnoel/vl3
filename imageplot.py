@@ -7,8 +7,14 @@ Created by Vincent Noel on 2011-07-18.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
 
 ImagePlot class for lidar curtain plot.
-This script can also be used standalone, as
-imageplot.py LNA_FOLDER
+This is where the real work of data display takes place in the
+vl3 application.
+
+This script can also be used standalone :
+    imageplot.py LNA_FOLDER
+    or 
+    imageplot.py LNA_FILE
+but menu items most likely won't work.
 """
 
 import sys
@@ -32,6 +38,10 @@ import matplotlib.dates as mdates
 import lna
 from profile import ProfilePlot, ProfileController
 
+major_version = 0
+minor_version = 1
+
+# change factor for colormap caxis
 cmap_change_factor = 1.5
 
 
@@ -92,7 +102,7 @@ class ImagePlot(HasTraits):
             ),
         ),
         resizable=True,
-        title='View Lidar 3',
+        title='View Lidar 3 v%d.%d' % (major_version, minor_version),
         icon=icon_img
     )
     

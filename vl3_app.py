@@ -5,6 +5,9 @@ vl3_app.py
 
 Created by Vincent Noel on 2011-07-18.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
+
+This is the main program for the vl3 application.
+Takes care of creating menus and stuff.
 """
 
 import sys, os
@@ -67,8 +70,8 @@ class ImagePlotController(Handler):
         
         img = ImageResource('about', search_path=[os.getcwd()+'/', './'])
         text=['VL3 - View Lidar 3 - v0.1\n', u'Copyright © VNoel 2001-2011 - LMD/CNRS/IPSL\n', 
-            'Based on input and help from M. Chiriaco, A. Delaval, Y. Morille.',
-            'Based on the Enthought Tool Suite (ETS)']
+            'Based on input and help from M. Chiriaco, A. Delaval, Y. Morille, S. Turquety.',
+            'Using the Enthought Tool Suite (ETS), Python.']
         dlg = AboutDialog(parent=ui_info.ui.control, additions=text, image=img)
         dlg.open()
         

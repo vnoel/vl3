@@ -115,7 +115,7 @@ def lna_binary_file_read(lnafile):
         if channels[j] is not None:
             data[channels[j]] = pmbr2[j] * 1e-11
             
-    # focus on low altitudes
+    # remove high altitudes
     r /= 1e3
     r, data = cut_off_high_altitudes(r, data)
 
@@ -183,9 +183,9 @@ def lna_bin_read(lnafile, debug=False):
     reserve = np.fromfile(file=f, dtype='i1', count=128)
 
     if debug:
-        print '# voies: ', nvoies
-        print '# profiles : ', nprof
-        print 'Intitules voies : ', intitules
+        print 'n voies: ', nvoies
+        print 'n profiles : ', nprof
+        print 'intitules voies : ', intitules
         print 'npoints : ', npoints
 
     # altitude range, converted from m to km
@@ -202,23 +202,18 @@ def lna_bin_read(lnafile, debug=False):
         b[j] = -(data - np.mean(data[-200:]))
         
     # actual data
-    # create lists of data arrays
-    p = [np.zeros([nprof, npoints[j]]) for j in range(nvoies)]      # signal
 
+    p = [np.zeros([nprof, n]) for n in npoints]
     time = []
     for i in range(nprof):
         d, m, y, hh, mm, ss = np.fromfile(file=f, dtype='<u2', count=6)
         time.append(datetime(y,m,d,hh,mm,ss))
             
-        for j in range(nvoies):
-            if npoints[j]==0:
-                continue
-
-            data = np.fromfile(file=f, dtype='<i2', count=npoints[j])
-            # profile data corrected for average bias           
-            p[j][i,:] = -(data - np.mean(data[-200:]))
-             
-    # apply factors and offsets
+        for j,n in enumerate(npoints):
+            if n>0:
+                data = np.fromfile(file=f, dtype='<i2', count=n)
+                # store profile data corrected for average bias           
+                p[j][i,:] = -(data - np.mean(data[-200:]))
              
     return time, r, p, b, intitules, fov_type
                 
