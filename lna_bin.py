@@ -33,8 +33,8 @@ def lna_binary_folder_read(lnafolder, fov_type='NF'):
     files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
     files.sort()
     fulldata = None
+    
     for f in files:
-        print 'Reading ', f
         lna_data = lna_binary_file_read(f)
         time = lna_data['time']
         alt = lna_data['alt']
@@ -218,16 +218,22 @@ def lna_bin_read(lnafile, debug=False):
     return time, r, p, b, intitules, fov_type
                 
 
-def main():
-    print 'Testing single file read'
-    testfile = 'test_data/binary/20110705/lna_0a_rawNF_v01_20110705_065026_31.dat'
-    print 'Reading ', testfile
-    lna_binary_file_read(testfile)
-    print 'Testing Folder read'
-    testfolder = 'test_data/binary/20110705'
-    print 'Reading Folder', testfolder
-    lna_binary_folder_read(testfolder)
+import unittest
 
+class test(unittest.TestCase):
+    
+    def test_file(self):
+        testfile = 'test_data/binary/20110705/lna_0a_rawNF_v01_20110705_065026_31.dat'
+        lna_data = lna_binary_file_read(testfile)
+        time = lna_data['time']
+        self.assertEqual(len(time), 180)
+        
+    def test_folder(self):
+        testfolder = 'test_data/binary/20110705'
+        lna_data = lna_binary_folder_read(testfolder)
+        time = lna_data['time']
+        self.assertEqual(len(time), 1440)
+    
 
 if __name__ == '__main__':    
-    main()
+    unittest.main()
