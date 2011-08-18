@@ -49,7 +49,6 @@ class ImagePlot(HasTraits):
     icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './'])
     
     data_type = Enum('Backscatter', 'Ratio')
-    
     seldata = Enum(values='data_list')
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
@@ -60,7 +59,7 @@ class ImagePlot(HasTraits):
 
     traits_view = View(
         HGroup(
-            UItem('data_type'),
+            UItem('data_type', visible_when=''),
             UItem('seldata', springy=True),
             visible_when='plot_title != ""'
         ),
@@ -136,6 +135,7 @@ class ImagePlot(HasTraits):
         self.epochtime_range = np.min(epochtime), np.max(epochtime)
 
         data_type = 'Backscatter'
+
         self.update_data_list()
         self.seldata = self.data_list[0]
 

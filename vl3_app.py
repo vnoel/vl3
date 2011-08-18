@@ -72,6 +72,7 @@ class ImagePlotController(Handler):
         dlg = AboutDialog(parent=ui_info.ui.control, additions=text, image=img)
         dlg.open()
         
+        
     def close(self, info, is_ok):
         print 'Log: Closing'
         # would be nice to close the profile plot
