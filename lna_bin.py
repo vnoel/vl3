@@ -6,10 +6,11 @@ lna_bin.py
 Created by Vincent Noel on 2011-08-17.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
 """
+import glob
+import unittest
+from datetime import datetime
 
 import numpy as np
-from datetime import datetime
-import glob
 
 
 def ratio(denum, num):
@@ -139,7 +140,7 @@ def lna_bin_read(lnafile, debug=False):
     Reads all the data from a SIRTA LNA binary file.
     parameters:
         lnafile - name of the LNA data file
-        debug - if True, prints out information durin read
+        debug - if True, prints out information during read
     output:
         time - vectors of datetime objects (nprof)
         r - vector of vertical altitude range (npoints)
@@ -208,7 +209,6 @@ def lna_bin_read(lnafile, debug=False):
     for i in range(nprof):
         d, m, y, hh, mm, ss = np.fromfile(file=f, dtype='<u2', count=6)
         time.append(datetime(y,m,d,hh,mm,ss))
-            
         for j,n in enumerate(npoints):
             if n>0:
                 data = np.fromfile(file=f, dtype='<i2', count=n)
@@ -218,7 +218,6 @@ def lna_bin_read(lnafile, debug=False):
     return time, r, p, b, intitules, fov_type
                 
 
-import unittest
 
 class test(unittest.TestCase):
     
