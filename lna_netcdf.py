@@ -76,9 +76,9 @@ def lna_netcdf_file_read(yagfile):
             idx = data[long_name] == var.missing_value
             data[long_name][idx] = np.nan
     
-    data['p7: Depolarization Ratio 532nm NFOV'] = ratio(nc.variables['p1'][:], nc.variables['p2'][:])
-    data['p8: Depolarization Ratio 532nm WFOV'] = ratio(nc.variables['p4'][:], nc.variables['p5'][:])
-    data['p9: Color Ratio 1064nm/532nm NFOV'] = ratio(nc.variables['p1'][:], nc.variables['p3'][:])
+    data['p7: Depolarization Ratio 532nm NFOV'] = signal_ratio(nc.variables['p1'][:], nc.variables['p2'][:])
+    data['p8: Depolarization Ratio 532nm WFOV'] = signal_ratio(nc.variables['p4'][:], nc.variables['p5'][:])
+    data['p9: Color Ratio 1064nm/532nm NFOV'] = signal_ratio(nc.variables['p1'][:], nc.variables['p3'][:])
     # data['p10: Color Ratio 1064nm/532nm WFOV'] = ratio(nc.variables['p4'][:], nc.variables['p6'][:])
     
     lna_data = {'time':time, 'alt':alt, 'data':data, 'date':date, 'filetype':'netcdf'}
@@ -87,7 +87,7 @@ def lna_netcdf_file_read(yagfile):
     return lna_data
 
 
-def ratio(denum, num):
+def signal_ratio(denum, num):
     
     d = num / denum
     idx = (denum < -998) | (num < -998)
