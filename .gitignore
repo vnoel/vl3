@@ -1,3 +1,4 @@
 *.pyc
+.ropeproject
 legacy
 test_data
