@@ -1,2 +1,4 @@
 - need to check how depolarization is calculted (perp/para or perp/total)
 - need to check if what is shown for 532nm is consistent binary/netcdf (total or para ?)
+- fix division by zero and invalid division in ratio function
+- rename it to signal_ratio

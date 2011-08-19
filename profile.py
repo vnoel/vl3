@@ -7,11 +7,10 @@ Created by Vincent Noel on 2011-07-15.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
 """
 
-import numpy as np
 import chaco.api as chaco
 
-from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str, Any
-from traitsui.api import Item, UItem, View, HGroup, VGroup, Handler
+from traits.api import HasTraits, Instance
+from traitsui.api import UItem, View, VGroup, Handler
 from enable.api import ComponentEditor
 
 
@@ -73,7 +72,6 @@ if __name__ == '__main__':
     Show some stuff as a test
     '''
     import lna
-    import numpy as np
     
     datetime, alt, data, date = lna.nc_folder_read('test_data/netcdf/')
     seldata = data.keys()[0]
