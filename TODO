@@ -1,5 +1,3 @@
 Project:
 - TODO: need to check how depolarization is calculted (perp/para or perp/total)
 - TODO: need to check if what is shown for 532nm is consistent binary/netcdf (total or para ?)
-- TODO: fix division by zero and invalid division in ratio function
-

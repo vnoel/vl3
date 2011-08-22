@@ -9,23 +9,8 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-
+from util import signal_ratio
 import numpy as np
-
-
-def ratio(denum, num):
-
-    d = num / denum
-    idx = (denum < -998) | (num < -998)
-    d[idx] = np.nan
-
-    idx = (d < 0)
-    d[idx] = np.nan
-
-    idx = (d > 10)
-    d[idx] = np.nan
-
-    return d
 
 
 def lna_binary_folder_read(lnafolder, fov_type='NF'):
@@ -114,20 +99,22 @@ def lna_binary_file_read(lnafile):
     data = {}
     for j in range(nchannels):
         if channels[j] is not None:
-            data[channels[j]] = pmbr2[j] * 1e-11
-            
+            data[channels[j]] = pmbr2[j] * 1e-12
+
     # remove high altitudes
     r /= 1e3
     r, data = cut_off_high_altitudes(r, data)
 
-    # add depolarization
+    # replace parallel with sum(para + perp)
     namepara = 'p1 - Range-Corrected Backscatter 532nm '+fov
     nameperp = 'p3 - Range-Corrected Backscatter 532nm crosspol '+fov
-    depol532 = ratio(data[namepara], data[nameperp])
+    # data[namepara] = data[namepara] + data[nameperp]
+    # add depolarization
+    depol532 = signal_ratio(data[namepara], data[nameperp])
     data['p4 - Depolarization Ratio 532nm ' + fov] = depol532
     # add color ratio
     total532 = data[namepara] + data[nameperp]
-    cr = ratio(total532, data['p2 - Range-Corrected Backscatter 1064nm '+fov])
+    cr = signal_ratio(total532, data['p2 - Range-Corrected Backscatter 1064nm '+fov])
     data['p5 - Color Ratio 1064nm / 532nm ' + fov] = cr
     
     lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary'}
@@ -169,7 +156,7 @@ def lna_bin_read(lnafile, debug=False):
     # variable names follow sirta conventions
     nprof, systeme, freq = np.fromfile(file=f, dtype='<i4', count=3)
     nprof -= 1      # first profile is noise data
-    fov_type = 'WF' if (systeme==1) else 'NF'
+    fov_type = 'WFOV' if (systeme==1) else 'NFOV'
     
     resotemp, resospace = np.fromfile(file=f, dtype='<f4', count=2)
     pretrig, moy, moybruit, nvoies = np.fromfile(file=f, dtype='<i4', count=4)
@@ -200,7 +187,8 @@ def lna_bin_read(lnafile, debug=False):
     # read noise data
     for j in range(nvoies):
         data = np.fromfile(file=f, dtype='<i2', count=npoints[j])
-        b[j] = -(data - np.mean(data[-200:]))
+        data = np.ma.masked_invalid(data)
+        b[j] = -(data - np.ma.mean(data[-200:]))
         
     # actual data
 
@@ -212,8 +200,9 @@ def lna_bin_read(lnafile, debug=False):
         for j,n in enumerate(npoints):
             if n>0:
                 data = np.fromfile(file=f, dtype='<i2', count=n)
+                data = np.ma.masked_invalid(data)
                 # store profile data corrected for average bias           
-                p[j][i,:] = -(data - np.mean(data[-200:]))
+                p[j][i,:] = -(data - np.ma.mean(data[-200:]))
              
     return time, r, p, b, intitules, fov_type
                 

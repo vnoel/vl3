@@ -10,6 +10,7 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import numpy as np
 from datetime import datetime
 import glob
+from util import signal_ratio
 
 # I'd rather use netCDF4, but it is not part of EPD Free
 # scipy is more frequent
@@ -86,20 +87,6 @@ def lna_netcdf_file_read(yagfile):
     
     return lna_data
 
-
-def signal_ratio(denum, num):
-    
-    d = num / denum
-    idx = (denum < -998) | (num < -998)
-    d[idx] = np.nan
-    
-    idx = (d < 0)
-    d[idx] = np.nan
-    
-    idx = (d > 10)
-    d[idx] = np.nan
-    
-    return d
 
 
 import unittest

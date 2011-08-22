@@ -88,4 +88,3 @@ def open_source(lna_source):
         
     return lna_data
 
-

@@ -26,8 +26,8 @@ from chaco.tools.api import LineInspector, ZoomTool
 from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
-from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str, Directory, File
-from traitsui.api import Item, UItem, View, HGroup, VGroup, Handler
+from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
+from traitsui.api import Item, UItem, View, HGroup
 from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
@@ -144,7 +144,7 @@ class ImagePlot(HasTraits):
         epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
         self.epochtime_range = np.min(epochtime), np.max(epochtime)
 
-        data_type = 'Backscatter'
+        self.data_type = 'Backscatter'
 
         self.update_data_list()
         self.seldata = self.data_list[0]

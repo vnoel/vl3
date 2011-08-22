@@ -10,8 +10,8 @@ This is the main program for the vl3 application.
 Takes care of creating menus and stuff.
 """
 
-import sys, os
 
+import sys, os
 from pyface.api import FileDialog, DirectoryDialog, AboutDialog, OK, ImageResource
 from traits.api import Instance
 from traitsui.api import Handler
