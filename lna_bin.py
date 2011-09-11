@@ -10,7 +10,7 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-from util import signal_ratio, lna_data_merge
+from util import signal_ratio, lna_multiple_files_read, lna_data_merge
 import numpy as np
 
 
@@ -24,7 +24,7 @@ def lna_binary_folder_read(lnafolder):
     
     for fov_type in 'NF', 'WF':
         files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
-        lna_data_items[fov_type] = lna_binary_files_read(files)
+        lna_data_items[fov_type] = lna_multiple_files_read(files, lna_binary_file_read)
 
     lna_data = lna_data_merge(lna_data_items['NF'], lna_data_items['WF'])
 
@@ -73,26 +73,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     for key in data:
         data[key] = data[key][:,idx]
     return r[idx], data
-        
-    
-def lna_binary_files_read(filelist):
-    """
-    read lna data from a list of files in binary format
-    merge data from all files
-    """
-    
-    filelist.sort()    
-    fulldata = None
-    
-    for f in filelist:
-        lna_data = lna_binary_file_read(f)
-        fulldata = lna_data_merge(fulldata, lna_data)
-                
-    if fulldata is None:
-        return None
-        
-    return fulldata
-    
+            
     
 def lna_binary_file_read(lnafile):
     """

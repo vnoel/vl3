@@ -10,30 +10,16 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import numpy as np
 from datetime import datetime
 import glob
-from util import signal_ratio, lna_data_merge
+from util import signal_ratio, lna_multiple_files_read
 from scipy.io.netcdf import netcdf_file
 
     
 def lna_netcdf_folder_read(yagfolder):
     
     files = glob.glob(yagfolder + '/*.nc')
-    lna_data = lna_netcdf_files_read(files)
+    lna_data = lna_multiple_files_read(files, lna_netcdf_file_read)
     
     return lna_data
-
-
-def lna_netcdf_files_read(filelist):
-    filelist.sort()
-    fulldata = None
-    for f in filelist:
-        print 'Reading ', f
-        lna_data = lna_netcdf_file_read(f)
-        fulldata = lna_data_merge(fulldata, lna_data)
-    
-    if fulldata is None:
-        return None
-    
-    return fulldata
 
 
 def lna_netcdf_file_read(yagfile):

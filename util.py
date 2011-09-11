@@ -38,3 +38,16 @@ def lna_data_merge(lna_data1, lna_data2):
 
         return lna_data1
 
+
+def lna_multiple_files_read(filelist, file_read_function):
+    filelist.sort()
+    fulldata = None
+    for f in filelist:
+        print 'Reading ', f
+        lna_data = file_read_function(f)
+        fulldata = lna_data_merge(fulldata, lna_data)
+
+    if fulldata is None:
+        return None
+
+    return fulldata
