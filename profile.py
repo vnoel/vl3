@@ -31,7 +31,6 @@ class ProfilePlot(HasTraits):
         self.data = chaco.ArrayPlotData()
         self.data.set_data('value', [])
         self.data.set_data('index', [])
-        self.closeme = False
         
         plot = chaco.Plot(self.data, orientation='v')
         plot.plot(('index', 'value'), name='profile')
