@@ -10,7 +10,7 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-from util import signal_ratio
+from util import signal_ratio, lna_data_merge
 import numpy as np
 
 
@@ -73,36 +73,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     for key in data:
         data[key] = data[key][:,idx]
     return r[idx], data
-    
-    
-def lna_data_merge(lna_data1, lna_data2):
-    """
-    merge two datasets:
-    merge time vectors from both datasets
-    merge data arrays present in both datasets
-    copy arrays that are only in one dataset
-    """
-    
-
-    if lna_data1 is None and lna_data2 is None:
-        return None
-    elif lna_data1 is None:
-        return lna_data2.copy()
-    elif lna_data2 is None:
-        return lna_data1.copy()
-    else:
-        lna_data1['time'].extend(lna_data2['time'])
-        for key in lna_data1['data']:
-            if key in lna_data2['data']:
-                # extend data that is in both datasets
-                lna_data1['data'][key] = np.append(lna_data1['data'][key], lna_data2['data'][key], axis=0)
-        for key in lna_data2['data']:
-            if key not in lna_data1['data']:
-                # copy data that is just in second data
-                lna_data1['data'][key] = lna_data2['data'][key].copy()
-
-        return lna_data1
-    
+        
     
 def lna_binary_files_read(filelist):
     """

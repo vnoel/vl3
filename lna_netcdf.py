@@ -10,47 +10,35 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import numpy as np
 from datetime import datetime
 import glob
-from util import signal_ratio
-
-# I'd rather use netCDF4, but it is not part of EPD Free
-# scipy is more frequent
+from util import signal_ratio, lna_data_merge
 from scipy.io.netcdf import netcdf_file
-# import netCDF4 as netcdf_file
 
-
+    
 def lna_netcdf_folder_read(yagfolder):
     
     files = glob.glob(yagfolder + '/*.nc')
-    files.sort()
+    lna_data = lna_netcdf_files_read(files)
+    
+    return lna_data
+
+
+def lna_netcdf_files_read(filelist):
+    filelist.sort()
     fulldata = None
-    for f in files:
+    for f in filelist:
         print 'Reading ', f
         lna_data = lna_netcdf_file_read(f)
-        time = lna_data['time']
-        alt = lna_data['alt']
-        data = lna_data['data']
-        date = lna_data['date']
-        
-        if fulldata is None:
-            fulldata = data
-            fulltime = time
-        else:
-            fulltime.extend(time)
-            for key in fulldata:
-                fulldata[key] = np.append(fulldata[key], data[key], axis=0)
+        fulldata = lna_data_merge(fulldata, lna_data)
     
     if fulldata is None:
         return None
     
-    full_lna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date, 'filetype':'netcdf'}
-    
-    return full_lna_data
+    return fulldata
 
 
 def lna_netcdf_file_read(yagfile):
     
     nc = netcdf_file(yagfile)
-    # nc = netcdf_file.Dataset(yagfile)
     
     time = nc.variables['time'][:]
     hour = np.floor(time)
