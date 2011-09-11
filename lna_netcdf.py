@@ -15,6 +15,7 @@ from util import signal_ratio
 # I'd rather use netCDF4, but it is not part of EPD Free
 # scipy is more frequent
 from scipy.io.netcdf import netcdf_file
+# import netCDF4 as netcdf_file
 
 
 def lna_netcdf_folder_read(yagfolder):
@@ -49,6 +50,7 @@ def lna_netcdf_folder_read(yagfolder):
 def lna_netcdf_file_read(yagfile):
     
     nc = netcdf_file(yagfile)
+    # nc = netcdf_file.Dataset(yagfile)
     
     time = nc.variables['time'][:]
     hour = np.floor(time)
@@ -107,4 +109,8 @@ class test(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    print 'profiling now'
+    import cProfile
+    cProfile.run("lna_netcdf_folder_read('test_data/netcdf')", 'profile')
+    
     unittest.main()

@@ -241,8 +241,6 @@ def lna_bin_read(lnafile, debug=False):
     # read noise data
     for j in range(nvoies):
         data = np.fromfile(file=f, dtype='<i2', count=npoints[j])
-        # data = np.ma.masked_invalid(data)
-        # b[j] = -(data - np.ma.mean(data[-200:]))
         b[j] = -(data - np.mean(data[-200:]))
         
     # actual data
@@ -255,9 +253,7 @@ def lna_bin_read(lnafile, debug=False):
         for j,n in enumerate(npoints):
             if n>0:
                 data = np.fromfile(file=f, dtype='<i2', count=n)
-                # data = np.ma.masked_invalid(data)
                 # store profile data corrected for average bias           
-                # p[j][i,:] = -(data - np.ma.mean(data[-200:]))
                 p[j][i,:] = -(data - np.mean(data[-200:]))
              
     return time, r, p, b, intitules, fov_type
