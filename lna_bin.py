@@ -6,6 +6,7 @@ lna_bin.py
 Created by Vincent Noel on 2011-08-17.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
 """
+
 import glob
 import unittest
 from datetime import datetime
@@ -18,27 +19,9 @@ def lna_binary_folder_read(lnafolder, fov_type='NF'):
     # NF
     files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
     files.sort()
-    fulldata = None
-    
-    for f in files:
-        lna_data = lna_binary_file_read(f)
-        time = lna_data['time']
-        alt = lna_data['alt']
-        data = lna_data['data']
-        date = lna_data['date']
-        if fulldata is None:
-            fulldata = data.copy()
-            fulltime = time
-        else:
-            fulltime.extend(time)
-            for key in data:
-                fulldata[key] = np.append(fulldata[key], data[key], axis=0)
-                
-    if fulldata is None:
-        return None
-        
-    full_lna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date, 'filetype':'binary'}
-    return full_lna_data
+    lna_data = lna_binary_folder_read(files)
+
+    return lna_data
     
     
 def improve_channel_names(names, fov_type):
@@ -68,6 +51,32 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
         data[key] = data[key][:,idx]
     r = r[idx]
     return r, data
+    
+    
+def lna_binary_files_read(filelist):
+    
+    fulldata = None
+    
+    for f in filelist:
+        lna_data = lna_binary_file_read(f)
+        time = lna_data['time']
+        alt = lna_data['alt']
+        data = lna_data['data']
+        date = lna_data['date']
+        if fulldata is None:
+            fulldata = data.copy()
+            fulltime = time
+        else:
+            fulltime.extend(time)
+            for key in data:
+                fulldata[key] = np.append(fulldata[key], data[key], axis=0)
+                
+    if fulldata is None:
+        return None
+        
+    full_lna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date, 'filetype':'binary'}
+    return full_lna_data
+    
     
 def lna_binary_file_read(lnafile):
     
