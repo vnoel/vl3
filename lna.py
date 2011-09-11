@@ -39,13 +39,10 @@ def _find_closest_time(time, timelist):
 
 def _lna_data_regrid_time(lna_data):
     
-    # print 'Regridding data on fixed-step time'
-    
     time = lna_data['time']
     data = lna_data['data']
 
     delta = time[1] - time[0]
-    # print 'regridding using delta ', delta
     current = time[0]
     newtime = [time[0]]
     while current < time[-1]:
@@ -58,7 +55,6 @@ def _lna_data_regrid_time(lna_data):
     
     newdata = {}
     for k in data.keys():
-        # print 'Regridding ' + k
         newk = np.empty([len(newtime), np.shape(data[k])[1]])
         iprof = -1
         for i in xrange(len(numnewtime)):
