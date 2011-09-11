@@ -39,15 +39,6 @@ def lna_binary_folder_read(lnafolder, fov_type='NF'):
         
     full_lna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date, 'filetype':'binary'}
     return full_lna_data
-
-
-def fix_channel_names(names):
-    # we need this because some channel names are fucked up
-    newnames = []
-    for name in names:
-        newname = ''.join(c for c in name if ord(c)<128)
-        newnames.append(newname)
-    return newnames
     
     
 def improve_channel_names(names, fov_type):
