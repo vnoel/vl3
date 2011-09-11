@@ -31,27 +31,35 @@ def lna_binary_folder_read(lnafolder):
     return lna_data
     
     
-def improve_channel_names(names, fov_type):
+def _improve_channel_name(name, start, fov_type):
+
+    if name.startswith('532') or name.startswith('1,06'):
+        newname = 'Range-Corrected Backscatter '
+        if name.startswith('532'):
+            newname = newname + '532nm '
+        elif name.startswith('1,06'):
+            newname = 'p%02d - ' % (start + 1) + newname + '1064nm '
+            
+        if 'paral' in name:
+            newname = 'p%02d - ' % (start) + newname
+        elif 'perp' in name:
+            newname = 'p%02d - ' % (start + 2) + newname + 'crosspol '
+        newname = newname + fov_type
+    else:
+        newname = None
+
+    return newname
+    
+    
+def _improve_channel_names(names, fov_type):
     """
     create long versions of channel names   
     """
+    
     start = 1 if fov_type.startswith('NF') else 6
     newnames = []
     for name in names:
-        if name.startswith('532') or name.startswith('1,06'):
-            newname = 'Range-Corrected Backscatter '
-            if name.startswith('532'):
-                newname = newname + '532nm '
-            elif name.startswith('1,06'):
-                newname = 'p%02d - ' % (start + 1) + newname + '1064nm '
-                
-            if 'paral' in name:
-                newname = 'p%02d - ' % (start) + newname
-            elif 'perp' in name:
-                newname = 'p%02d - ' % (start + 2) + newname + 'crosspol '
-            newname = newname + fov_type
-        else:
-            newname = None
+        newname = _improve_channel_name(name, start, fov_type)
         newnames.append(newname)
     return newnames
         
@@ -135,7 +143,7 @@ def lna_binary_file_read(lnafile):
             pmb = p[i][j,:] - b[i]
             pmbr2[i][j,:] = pmb * r * r
 
-    channels = improve_channel_names(channels, fov)
+    channels = _improve_channel_names(channels, fov)
         
     # create data dictionary
     data = {}
