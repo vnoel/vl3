@@ -19,7 +19,7 @@ def lna_binary_folder_read(lnafolder, fov_type='NF'):
     # NF
     files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
     files.sort()
-    lna_data = lna_binary_folder_read(files)
+    lna_data = lna_binary_files_read(files)
 
     return lna_data
     
@@ -53,29 +53,34 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     return r, data
     
     
+def lna_data_merge(lna_data1, lna_data2):
+
+    if lna_data1 is None and lna_data2 is None:
+        return None
+    elif lna_data1 is None:
+        return lna_data2.copy()
+    elif lna_data2 is None:
+        return lna_data1.copy()
+    else:
+        lna_data1['time'].extend(lna_data2['time'])
+        for key in lna_data1['data']:
+            lna_data1['data'][key] = np.append(lna_data1['data'][key], lna_data2['data'][key], axis=0)
+
+        return lna_data1
+    
+    
 def lna_binary_files_read(filelist):
     
     fulldata = None
     
     for f in filelist:
         lna_data = lna_binary_file_read(f)
-        time = lna_data['time']
-        alt = lna_data['alt']
-        data = lna_data['data']
-        date = lna_data['date']
-        if fulldata is None:
-            fulldata = data.copy()
-            fulltime = time
-        else:
-            fulltime.extend(time)
-            for key in data:
-                fulldata[key] = np.append(fulldata[key], data[key], axis=0)
+        fulldata = lna_data_merge(fulldata, lna_data)
                 
     if fulldata is None:
         return None
         
-    full_lna_data = {'time':fulltime, 'alt':alt, 'data':fulldata, 'date':date, 'filetype':'binary'}
-    return full_lna_data
+    return fulldata
     
     
 def lna_binary_file_read(lnafile):
