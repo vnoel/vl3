@@ -35,6 +35,7 @@ def improve_channel_names(names, fov_type):
     """
     create long versions of channel names   
     """
+    start = 1 if fov_type.startswith('NF') else 6
     newnames = []
     for name in names:
         if name.startswith('532') or name.startswith('1,06'):
@@ -42,12 +43,12 @@ def improve_channel_names(names, fov_type):
             if name.startswith('532'):
                 newname = newname + '532nm '
             elif name.startswith('1,06'):
-                newname = 'p2 - ' + newname + '1064nm '
+                newname = 'p%02d - ' % (start + 1) + newname + '1064nm '
                 
             if 'paral' in name:
-                newname = 'p1 - ' + newname
+                newname = 'p%02d - ' % (start) + newname
             elif 'perp' in name:
-                newname = 'p3 - ' + newname + 'crosspol '
+                newname = 'p%02d - ' % (start + 2) + newname + 'crosspol '
             newname = newname + fov_type
         else:
             newname = None
@@ -147,17 +148,21 @@ def lna_binary_file_read(lnafile):
     r /= 1e3
     r, data = cut_off_high_altitudes(r, data)
 
-    # replace parallel with sum(para + perp)
-    namepara = 'p1 - Range-Corrected Backscatter 532nm '+fov
-    nameperp = 'p3 - Range-Corrected Backscatter 532nm crosspol '+fov
-    # data[namepara] = data[namepara] + data[nameperp]
+    # create depolarization + color ratio
+    
+    start = 1 if fov.startswith('NF') else 6
+
+    namepara = 'p%02d - Range-Corrected Backscatter 532nm ' % start + fov
+    nameperp = 'p%02d - Range-Corrected Backscatter 532nm crosspol ' % (start + 2) + fov
     # add depolarization
     depol532 = signal_ratio(data[namepara], data[nameperp])
-    data['p4 - Depolarization Ratio 532nm ' + fov] = depol532
+    data['p%02d - Depolarization Ratio 532nm ' % (start + 3) + fov] = depol532
+    
     # add color ratio
     total532 = data[namepara] + data[nameperp]
-    cr = signal_ratio(total532, data['p2 - Range-Corrected Backscatter 1064nm '+fov])
-    data['p5 - Color Ratio 1064nm / 532nm ' + fov] = cr
+    total1064 = data['p%02d - Range-Corrected Backscatter 1064nm ' % (start + 1) + fov]
+    cr = signal_ratio(total532, total1064)
+    data['p%02d - Color Ratio 1064nm / 532nm ' % (start + 4) + fov] = cr
     
     lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary'}
         
@@ -229,8 +234,9 @@ def lna_bin_read(lnafile, debug=False):
     # read noise data
     for j in range(nvoies):
         data = np.fromfile(file=f, dtype='<i2', count=npoints[j])
-        data = np.ma.masked_invalid(data)
-        b[j] = -(data - np.ma.mean(data[-200:]))
+        # data = np.ma.masked_invalid(data)
+        # b[j] = -(data - np.ma.mean(data[-200:]))
+        b[j] = -(data - np.mean(data[-200:]))
         
     # actual data
 
@@ -242,9 +248,10 @@ def lna_bin_read(lnafile, debug=False):
         for j,n in enumerate(npoints):
             if n>0:
                 data = np.fromfile(file=f, dtype='<i2', count=n)
-                data = np.ma.masked_invalid(data)
+                # data = np.ma.masked_invalid(data)
                 # store profile data corrected for average bias           
-                p[j][i,:] = -(data - np.ma.mean(data[-200:]))
+                # p[j][i,:] = -(data - np.ma.mean(data[-200:]))
+                p[j][i,:] = -(data - np.mean(data[-200:]))
              
     return time, r, p, b, intitules, fov_type
                 
@@ -253,17 +260,24 @@ def lna_bin_read(lnafile, debug=False):
 class test(unittest.TestCase):
     
     def test_file(self):
-        testfile = 'test_data/binary/20110705/lna_0a_rawNF_v01_20110705_065026_31.dat'
+        testfile = 'test_data/binary/lna_0a_rawNF_v01_20110705_065026_31.dat'
         lna_data = lna_binary_file_read(testfile)
         time = lna_data['time']
         self.assertEqual(len(time), 180)
         
     def test_folder(self):
-        testfolder = 'test_data/binary/20110705'
+        testfolder = 'test_data/binary'
         lna_data = lna_binary_folder_read(testfolder)
         time = lna_data['time']
-        self.assertEqual(len(time), 1440)
+        self.assertEqual(len(time), 1440 * 2)
     
 
 if __name__ == '__main__':    
+    print 'profiling now'
+    import cProfile
+    cProfile.run("lna_binary_folder_read('test_data/binary')", 'profile')
+
     unittest.main()
+    
+    # profiling
+    
