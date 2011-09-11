@@ -17,19 +17,16 @@ import numpy as np
 def lna_binary_folder_read(lnafolder):
     """
     Reads a folder of files containing lna data in binary format
+    Reads both narrow [NF] and wide [WF] field of view data
     """
     
-    # NF
-    files = glob.glob(lnafolder + '/lna_0a_rawNF' + '_*.dat')
-    files.sort()
-    lna_data_nf = lna_binary_files_read(files)
+    lna_data_items = dict()
     
-    # WF
-    files = glob.glob(lnafolder + '/lna_0a_rawWF' + '_*.dat')
-    files.sort()
-    lna_data_wf = lna_binary_files_read(files)
-    
-    lna_data = lna_data_merge(lna_data_nf, lna_data_wf)
+    for fov_type in 'NF', 'WF':
+        files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
+        lna_data_items[fov_type] = lna_binary_files_read(files)
+
+    lna_data = lna_data_merge(lna_data_items['NF'], lna_data_items['WF'])
 
     return lna_data
     
@@ -105,6 +102,7 @@ def lna_binary_files_read(filelist):
     merge data from all files
     """
     
+    filelist.sort()    
     fulldata = None
     
     for f in filelist:
