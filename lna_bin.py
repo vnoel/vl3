@@ -134,7 +134,7 @@ def lna_binary_file_read(lnafile):
     nchannels = len(channels)
     
     # correct for noise and square distance
-    pmbr2 = [np.zeros_like(p[i], dtype='f4') for i in range(nchannels)]     # signal minus noise, range-corrected
+    pmbr2 = [np.empty_like(p[i], dtype='f4') for i in range(nchannels)]     # signal minus noise, range-corrected
     for i in range(nchannels):
         if p[i].shape[1] < 2:
             continue
@@ -235,7 +235,7 @@ def lna_bin_read(lnafile, debug=False):
     r = np.r_[0:maxpoints] * resospace
 
     # first profile, noise data
-    b = [np.zeros(npoints[i]) for i in range(nvoies)]
+    b = [np.empty(npoints[i]) for i in range(nvoies)]
     # read 6 fields for time, unused
     d, m, y, hh, mm, ss = np.fromfile(file=f, dtype='<u2', count=6)
     # read noise data
@@ -247,7 +247,7 @@ def lna_bin_read(lnafile, debug=False):
         
     # actual data
 
-    p = [np.zeros([nprof, n]) for n in npoints]
+    p = [np.empty([nprof, n]) for n in npoints]
     time = []
     for i in range(nprof):
         d, m, y, hh, mm, ss = np.fromfile(file=f, dtype='<u2', count=6)
