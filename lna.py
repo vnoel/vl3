@@ -5,6 +5,18 @@ lna.py
 
 Created by Vincent Noel on 2011-07-14.
 Copyright (c) 2011 LMD/CNRS. All rights reserved.
+
+This module contains the function 
+open_source(source)
+which opens a file or a folder of files.
+
+The function finds out the format of files
+(either binary lna or netcdf) and calls the
+appropriate functions from lna_bin and lna_netcdf.
+
+After loading the data, it is regridded on a new time vector
+with constant time-step (to fill gaps in the data)
+
 """
 
 import os
@@ -16,7 +28,7 @@ from lna_netcdf import lna_netcdf_file_read, lna_netcdf_folder_read
 import matplotlib.dates as mdates
 
 
-def find_closest_time(time, timelist):
+def _find_closest_time(time, timelist):
 
     deltas = np.abs(time - timelist)
     imin = np.argmin(deltas)
@@ -25,7 +37,7 @@ def find_closest_time(time, timelist):
     return imin, mindelta
     
 
-def lna_data_regrid_time(lna_data):
+def _lna_data_regrid_time(lna_data):
     
     # print 'Regridding data on fixed-step time'
     
@@ -54,7 +66,7 @@ def lna_data_regrid_time(lna_data):
                     mindiff = np.abs(numnewtime[i] - numtime[iprof+1])
                     iprof = iprof + 1
             else:
-                iprof, mindiff = find_closest_time(numnewtime[i], numtime)
+                iprof, mindiff = _find_closest_time(numnewtime[i], numtime)
                 
             if mindiff > numdelta:
                 newk[i, :] = np.nan
@@ -67,24 +79,48 @@ def lna_data_regrid_time(lna_data):
     return lna_data
 
 
-def open_source(lna_source):
-    
-    if os.path.isdir(lna_source):
-        # is it a folder of netcdf or binary data ?
-        files = glob.glob(lna_source + '/*.nc')
+def _source_type(source):
+    folder = False
+    netcdf = False
+
+    if os.path.isdir(source):
+        folder = True
+        files = glob.glob(source + '/*.nc')
         if len(files) > 0:
+            netcdf = True
+    else:
+        if source.endswith('.nc'):
+            netcdf = True
+    return folder, netcdf
+
+
+def open_source(lna_source):
+    """
+    
+    opens a file or a folder of files.
+    
+    finds out the format of files
+    (either binary lna or netcdf) and calls the
+    appropriate functions from lna_bin and lna_netcdf.
+    
+    afterwards call the regrid function to regrid the
+    data on a new time vector with constant time-step.
+    
+    """
+    
+    folder, netcdf = _source_type(lna_source)
+    if folder:
+        if netcdf:
             lna_data = lna_netcdf_folder_read(lna_source)
         else:
             lna_data = lna_binary_folder_read(lna_source)
-            
     else:
-        # is it a file of netcdf or binary data ?
-        if '.nc' in lna_source:
+        if netcdf:
             lna_data = lna_netcdf_file_read(lna_source)
         else:
             lna_data = lna_binary_file_read(lna_source)
 
-    lna_data = lna_data_regrid_time(lna_data)
+    lna_data = _lna_data_regrid_time(lna_data)
         
     return lna_data
 
