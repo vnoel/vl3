@@ -55,6 +55,7 @@ class ImagePlot(HasTraits):
     data_source = ''
     data_list = List([])
     plot_title = Str('')
+    window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
     
     icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './'])
     
@@ -66,8 +67,6 @@ class ImagePlot(HasTraits):
     reset_zoom = Button('Reset Zoom')
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
-
-    window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version)
 
     traits_view = View(
         HGroup(
@@ -104,7 +103,7 @@ class ImagePlot(HasTraits):
             ),
         ),
         resizable=True,
-        title=window_title,
+        title=str(window_title),
         icon=icon_img
     )
     
@@ -120,14 +119,14 @@ class ImagePlot(HasTraits):
 
         if lna_source:
             self.open_data(lna_source)
-        
-        
+                
+
     def update_window_title(self):
-        self.window_title = 'View Lidar 3 v%d.%d - %s' % (major_version, minor_version, str(self.date.date()))
+        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.date.date())
         
-        
-    def make_title(self):
-        return str(self.date.date()) + ' : ' + self.seldata
+
+    def make_plot_title(self):
+        return str(self.date.date()) + ' : ' + self.seldata        
         
         
     def open_data(self, lna_source):
@@ -159,7 +158,7 @@ class ImagePlot(HasTraits):
         self.update_data_list()
         self.seldata = self.data_list[0]
 
-        self.plot_title = self.make_title()
+        self.plot_title = self.make_plot_title()
         self.update_window_title()
         self.pcolor, self.container = self.pcolor_create()
                 
@@ -195,7 +194,7 @@ class ImagePlot(HasTraits):
         self.fix_color_scale(self.data[self.seldata])
 
         plot.y_axis.title='Altitude [km]'
-        plot.title=self.make_title()
+        plot.title=self.make_plot_title()
         self.update_window_title()
         
         
@@ -256,7 +255,7 @@ class ImagePlot(HasTraits):
                 data_to_show[idx_neg] = np.nan
             
             self.pcolor_data.set_data('image', data_to_show)
-            self.pcolor.title = self.make_title()
+            self.pcolor.title = self.make_plot_title()
             
             self.fix_color_scale(data_to_show)
             
