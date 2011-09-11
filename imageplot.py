@@ -67,6 +67,8 @@ class ImagePlot(HasTraits):
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
 
+    window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version)
+
     traits_view = View(
         HGroup(
             UItem('data_type', visible_when=''),
@@ -102,7 +104,7 @@ class ImagePlot(HasTraits):
             ),
         ),
         resizable=True,
-        title='View Lidar 3 v%d.%d' % (major_version, minor_version),
+        title=window_title,
         icon=icon_img
     )
     
@@ -118,6 +120,10 @@ class ImagePlot(HasTraits):
 
         if lna_source:
             self.open_data(lna_source)
+        
+        
+    def update_window_title(self):
+        self.window_title = 'View Lidar 3 v%d.%d - %s' % (major_version, minor_version, str(self.date.date()))
         
         
     def make_title(self):
@@ -154,6 +160,7 @@ class ImagePlot(HasTraits):
         self.seldata = self.data_list[0]
 
         self.plot_title = self.make_title()
+        self.update_window_title()
         self.pcolor, self.container = self.pcolor_create()
                 
         
@@ -189,6 +196,8 @@ class ImagePlot(HasTraits):
 
         plot.y_axis.title='Altitude [km]'
         plot.title=self.make_title()
+        self.update_window_title()
+        
         
         plot.underlays.remove(plot.x_axis)
         plot.padding_left = 50
