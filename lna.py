@@ -80,6 +80,12 @@ def _lna_data_regrid_time(lna_data):
 
 
 def _source_type(source):
+    """
+    finds out the type of the lna data source
+    folder/file
+    binary/netcdf
+    """
+    
     folder = False
     netcdf = False
 
