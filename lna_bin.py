@@ -64,8 +64,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     idx = (r < max_alt)
     for key in data:
         data[key] = data[key][:,idx]
-    r = r[idx]
-    return r, data
+    return r[idx], data
     
     
 def lna_data_merge(lna_data1, lna_data2):
