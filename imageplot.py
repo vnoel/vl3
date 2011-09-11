@@ -57,7 +57,7 @@ class ImagePlot(HasTraits):
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
     
-    icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './'])
+    icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/'])
     
     data_type = Enum('Backscatter', 'Ratio')
     seldata = Enum(values='data_list')

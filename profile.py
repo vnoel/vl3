@@ -36,6 +36,7 @@ class ProfilePlot(HasTraits):
         plot = chaco.Plot(self.data, orientation='v')
         plot.plot(('index', 'value'), name='profile')
         plot.y_axis.title = 'Altitude [km]'
+        plot.x_axis.title = 'Signal'
         self.profileplot = plot
         if parent:
             plot.value_range = parent.img.color_mapper.range
