@@ -39,7 +39,7 @@ import lna
 from profile import ProfilePlot, ProfileController
 
 major_version = 0
-minor_version = 1
+minor_version = 2
 
 # change factor for colormap caxis
 cmap_change_factor = 1.5
