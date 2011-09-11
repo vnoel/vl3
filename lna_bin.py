@@ -15,6 +15,9 @@ import numpy as np
 
 
 def lna_binary_folder_read(lnafolder):
+    """
+    Reads a folder of files containing lna data in binary format
+    """
     
     # NF
     files = glob.glob(lnafolder + '/lna_0a_rawNF' + '_*.dat')
@@ -32,6 +35,9 @@ def lna_binary_folder_read(lnafolder):
     
     
 def improve_channel_names(names, fov_type):
+    """
+    create long versions of channel names   
+    """
     newnames = []
     for name in names:
         if name.startswith('532') or name.startswith('1,06'):
@@ -53,7 +59,11 @@ def improve_channel_names(names, fov_type):
         
 
 def cut_off_high_altitudes(r, data, max_alt=15.):
-    idx = (r < 15.)
+    """
+    keep only altitudes below a given level
+    """
+    
+    idx = (r < max_alt)
     for key in data:
         data[key] = data[key][:,idx]
     r = r[idx]
@@ -61,6 +71,13 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     
     
 def lna_data_merge(lna_data1, lna_data2):
+    """
+    merge two datasets:
+    merge time vectors from both datasets
+    merge data arrays present in both datasets
+    copy arrays that are only in one dataset
+    """
+    
 
     if lna_data1 is None and lna_data2 is None:
         return None
@@ -83,6 +100,10 @@ def lna_data_merge(lna_data1, lna_data2):
     
     
 def lna_binary_files_read(filelist):
+    """
+    read lna data from a list of files in binary format
+    merge data from all files
+    """
     
     fulldata = None
     
@@ -97,6 +118,11 @@ def lna_binary_files_read(filelist):
     
     
 def lna_binary_file_read(lnafile):
+    """
+    read lna data from a file in binary format
+    fix names of datasets
+    correct several issues in data
+    """
     
     time, r, p, b, channels, fov = lna_bin_read(lnafile)
     nchannels = len(channels)
