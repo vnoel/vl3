@@ -14,12 +14,19 @@ from util import signal_ratio
 import numpy as np
 
 
-def lna_binary_folder_read(lnafolder, fov_type='NF'):
+def lna_binary_folder_read(lnafolder):
     
     # NF
-    files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
+    files = glob.glob(lnafolder + '/lna_0a_rawNF' + '_*.dat')
     files.sort()
-    lna_data = lna_binary_files_read(files)
+    lna_data_nf = lna_binary_files_read(files)
+    
+    # WF
+    files = glob.glob(lnafolder + '/lna_0a_rawWF' + '_*.dat')
+    files.sort()
+    lna_data_wf = lna_binary_files_read(files)
+    
+    lna_data = lna_data_merge(lna_data_nf, lna_data_wf)
 
     return lna_data
     
@@ -64,7 +71,13 @@ def lna_data_merge(lna_data1, lna_data2):
     else:
         lna_data1['time'].extend(lna_data2['time'])
         for key in lna_data1['data']:
-            lna_data1['data'][key] = np.append(lna_data1['data'][key], lna_data2['data'][key], axis=0)
+            if key in lna_data2['data']:
+                # extend data that is in both datasets
+                lna_data1['data'][key] = np.append(lna_data1['data'][key], lna_data2['data'][key], axis=0)
+        for key in lna_data2['data']:
+            if key not in lna_data1['data']:
+                # copy data that is just in second data
+                lna_data1['data'][key] = lna_data2['data'][key].copy()
 
         return lna_data1
     
