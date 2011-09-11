@@ -120,6 +120,10 @@ class ImagePlot(HasTraits):
             self.open_data(lna_source)
         
         
+    def make_title(self):
+        return str(self.date.date()) + ' : ' + self.seldata
+        
+        
     def open_data(self, lna_source):
         
         if lna_source is None:
@@ -149,7 +153,7 @@ class ImagePlot(HasTraits):
         self.update_data_list()
         self.seldata = self.data_list[0]
 
-        self.plot_title = str(self.date.date()) + ' [' + self.data_source + ']'
+        self.plot_title = self.make_title()
         self.pcolor, self.container = self.pcolor_create()
                 
         
@@ -184,7 +188,7 @@ class ImagePlot(HasTraits):
         self.fix_color_scale(self.data[self.seldata])
 
         plot.y_axis.title='Altitude [km]'
-        plot.title=self.plot_title
+        plot.title=self.make_title()
         
         plot.underlays.remove(plot.x_axis)
         plot.padding_left = 50
@@ -243,7 +247,7 @@ class ImagePlot(HasTraits):
                 data_to_show[idx_neg] = np.nan
             
             self.pcolor_data.set_data('image', data_to_show)
-            self.pcolor.title = '[' + self.data_source + ']: ' + self.seldata
+            self.pcolor.title = self.make_title()
             
             self.fix_color_scale(data_to_show)
             
