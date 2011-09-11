@@ -78,6 +78,10 @@ class ImagePlotController(Handler):
         dlg.open()
         
         
+    def object_window_title_changed(self, info):
+        info.ui.title = self.view.window_title
+        
+        
     def close(self, info, is_ok):
         print 'Log: Closing'
         # would be nice to close the profile plot
