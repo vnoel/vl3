@@ -16,7 +16,7 @@ from scipy.io.netcdf import netcdf_file
     
 def lna_netcdf_folder_read(yagfolder):
     
-    files = glob.glob(yagfolder + '/*.nc')
+    files = glob.glob(yagfolder + '/lna_*_PR2_*.nc')
     lna_data = lna_multiple_files_read(files, lna_netcdf_file_read)
     
     return lna_data

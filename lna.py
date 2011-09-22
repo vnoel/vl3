@@ -87,7 +87,7 @@ def _source_type(source):
 
     if os.path.isdir(source):
         folder = True
-        files = glob.glob(source + '/*.nc')
+        files = glob.glob(source + '/lna_*_PR2_*.nc')
         if len(files) > 0:
             netcdf = True
     else:

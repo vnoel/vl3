@@ -38,6 +38,8 @@ import matplotlib.dates as mdates
 import lna
 from profile import ProfilePlot, ProfileController
 
+basesirta_path = '/bdd/SIRTA/'
+
 major_version = 0
 minor_version = 2
 
@@ -113,8 +115,12 @@ class ImagePlot(HasTraits):
         self.pcolor = None
         self.pcolor_data = None
         self.profileplot = None
-        # maybe point this to sirta folders
-        self.directory_to_load = os.getcwd()
+
+        if os.path.isdir(basesirta_path):
+            self.directory_to_load = basesirta_path
+        else:
+            self.directory_to_load = os.getcwd()
+
         self.save_image_file = os.getcwd()
 
         if lna_source:
