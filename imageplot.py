@@ -110,20 +110,25 @@ class ImagePlot(HasTraits):
     )
     
     
-    def __init__(self, lna_source=None):
+    def __init__(self, lna_source=None, base_folder=basesirta_path):
         
         self.pcolor = None
         self.pcolor_data = None
         self.profileplot = None
 
-        if os.path.isdir(basesirta_path):
-            self.directory_to_load = basesirta_path
-        else:
-            self.directory_to_load = os.getcwd()
-
         self.save_image_file = os.getcwd()
 
-        if lna_source:
+        if lna_source is None:
+            if os.path.isdir(base_folder):
+                self.directory_to_load = base_folder
+            else:
+                self.directory_to_load = os.getcwd()
+        else:
+            if os.path.isdir(lna_source):
+                self.directory_to_load = lna_source
+            else:
+                self.directory_to_load = os.path.dirname(lna_source)
+            
             self.open_data(lna_source)
                 
 
