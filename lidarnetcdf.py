@@ -5,7 +5,7 @@ import glob
 from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
-from util import signal_ratio
+from util import signal_ratio, lidar_multiple_files_read
 import json
 
 
@@ -16,9 +16,9 @@ lidar_ratios = formats['lidar_ratios']
 
 
 def lidar_netcdf_folder_read(source, format):
-    # files = glob.glob(source + '/*.nc')
-    # lidar_data = lidar_multiple_files_read(files, format, lidar_netcdf_file_read)
-    # return lidar_data
+    files = glob.glob(source + '/*.nc')
+    lidar_data = lidar_multiple_files_read(files, lidar_netcdf_file_read, format)
+    return lidar_data
     return None
     
     
@@ -45,6 +45,8 @@ def read_variable(nc, varproperties):
             variable[idx] = np.nan
 
             return variable
+            
+    print 'Could not find variable in netcdf file'
     
     
 def lidar_netcdf_file_read(source, format):
@@ -57,11 +59,17 @@ def lidar_netcdf_file_read(source, format):
     minutes = np.floor(hourfraction * 60.)
     seconds = hourfraction * 3600 - minutes * 60.
 
-    date = datetime(nc.year, nc.month, nc.day)
+    y = nc.year
+    m = nc.month
+    d = nc.day
+    # bug in ALS data
+    if d > 1900:
+        y, d = d, y
+    date = datetime(y, m, d)
     
     dates = []
     for i in range(len(time)):
-        dates.append(datetime(nc.year, nc.month, nc.day, hour[i], minutes[i], seconds[i]))
+        dates.append(datetime(y, m, d, hour[i], minutes[i], seconds[i]))
         
     time = dates
     
@@ -71,11 +79,14 @@ def lidar_netcdf_file_read(source, format):
     for variable in lidar_variables[format]:
         properties = lidar_variables[format][variable]
         lidar_data[variable] = read_variable(nc, properties)
+        
+    nc.close()
     
-    for ratio in lidar_ratios[format]:
-        num_name = lidar_ratios[format][ratio]['numerator']
-        denum_name = lidar_ratios[format][ratio]['denominator']
-        lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
+    if format in lidar_ratios:
+        for ratio in lidar_ratios[format]:
+            num_name = lidar_ratios[format][ratio]['numerator']
+            denum_name = lidar_ratios[format][ratio]['denominator']
+            lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
     
     data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format}
     

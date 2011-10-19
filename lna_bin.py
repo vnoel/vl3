@@ -10,7 +10,8 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-from util import signal_ratio, lna_multiple_files_read, lna_data_merge
+# from util import signal_ratio, lna_multiple_files_read, lna_data_merge
+from util import signal_ratio, lidar_multiple_files_read, lidar_data_merge
 import numpy as np
 
 
@@ -24,9 +25,9 @@ def lna_binary_folder_read(lnafolder):
     
     for fov_type in 'NF', 'WF':
         files = glob.glob(lnafolder + '/lna_0a_raw' + fov_type + '_*.dat')
-        lna_data_items[fov_type] = lna_multiple_files_read(files, lna_binary_file_read)
+        lna_data_items[fov_type] = lidar_multiple_files_read(files, lna_binary_file_read, 'lnabinary')
 
-    lna_data = lna_data_merge(lna_data_items['NF'], lna_data_items['WF'])
+    lna_data = lidar_data_merge(lna_data_items['NF'], lna_data_items['WF'])
 
     return lna_data
     
@@ -75,7 +76,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     return r[idx], data
             
     
-def lna_binary_file_read(lnafile):
+def lna_binary_file_read(lnafile, format):
     """
     read lna data from a file in binary format
     fix names of datasets

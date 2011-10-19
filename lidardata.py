@@ -50,7 +50,7 @@ def source_identify(source):
     folder = False
     if os.path.isdir(source):
         folder = True
-        files = glob.glob(folder)
+        files = glob.glob(source + '/*')
         format = None
         while format is None:
             format = datafile_format(files.pop())

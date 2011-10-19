@@ -71,14 +71,14 @@ if __name__ == '__main__':
     '''
     Show some stuff as a test
     '''
-    import lna
-    
-    datetime, alt, data, date = lna.nc_folder_read('test_data/netcdf/')
-    seldata = data.keys()[0]
-    profileplot = ProfilePlot(None)
-    profile_data = data[seldata][:,0]
-    profileplot.set_profile(profile_data, alt, seldata)
-    profileplot.configure_traits()
+    # import lna
+    # 
+    # datetime, alt, data, date = lna.nc_folder_read('test_data/netcdf/')
+    # seldata = data.keys()[0]
+    # profileplot = ProfilePlot(None)
+    # profile_data = data[seldata][:,0]
+    # profileplot.set_profile(profile_data, alt, seldata)
+    # profileplot.configure_traits()
     
     
     
