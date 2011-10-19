@@ -90,8 +90,8 @@ class ImagePlot(HasTraits):
             Menu(
                 CloseAction,
                 Separator(),
-                Action(name='Open LNA directory...', action='open_dir'),
-                Action(name='Open LNA file...', action='open_file'),
+                Action(name='Open directory (LNA/ALS)...', action='open_dir'),
+                Action(name='Open LNA/ALS file...', action='open_file'),
                 Action(name='Save Plot...', action='save'),
                 name='File',
             ),
