@@ -15,13 +15,16 @@ The variables to read in netcdf files are described in a "ini" file
 """
 
 import os
+import json
 import glob
 from lna_bin import lna_binary_file_read, lna_binary_folder_read
 from lidarnetcdf import lidar_netcdf_file_read, lidar_netcdf_folder_read
 import matplotlib.dates as mdates
 import numpy as np
+from util import read_supported_formats
 
-supported_formats = ['lna', 'als450']
+
+supported_formats = read_supported_formats()
 
 
 def datafile_format(datafile):

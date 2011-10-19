@@ -1,4 +1,6 @@
 import numpy as np
+import json
+import sys
 
 def signal_ratio(denum, num, ratio_min=0, ratio_max=10, invalid=-998):
 
@@ -50,3 +52,23 @@ def lidar_multiple_files_read(filelist, file_read_function, format):
         return None
 
     return fulldata
+
+
+def read_supported_formats():
+    f = open(sys.path[0]+'/dataformats', 'r')
+    formats = json.load(f)
+    f.close()
+    lidar_variables = formats['lidar_variables']
+    supported_formats = lidar_variables.keys()
+    return supported_formats
+    
+    
+def read_formats():
+    f = open(sys.path[0] + '/dataformats', 'r')
+    formats = json.load(f)
+    f.close()
+    lidar_variables = formats['lidar_variables']
+    lidar_ratios = formats['lidar_ratios']
+    return lidar_variables, lidar_ratios
+    
+    

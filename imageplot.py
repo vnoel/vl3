@@ -60,7 +60,7 @@ class ImagePlot(HasTraits):
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
     
-    icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/'])
+    icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/', sys.path[0]])
     
     data_type = Enum('Pr2', 'Ratio')
     seldata = Enum(values='data_list')

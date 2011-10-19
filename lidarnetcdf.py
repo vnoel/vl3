@@ -5,14 +5,11 @@ import glob
 from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
-from util import signal_ratio, lidar_multiple_files_read
+from util import signal_ratio, lidar_multiple_files_read, read_formats
 import json
 
 
-f = open('dataformats', 'r')
-formats = json.load(f)
-lidar_variables = formats['lidar_variables']
-lidar_ratios = formats['lidar_ratios']
+lidar_variables, lidar_ratios = read_formats()
 
 
 def lidar_netcdf_folder_read(source, format):
@@ -74,6 +71,8 @@ def lidar_netcdf_file_read(source, format):
     time = dates
     
     alt = nc.variables['range'][:]
+    if np.max(alt) > 1000:
+        alt = alt / 1000.
     
     lidar_data = {}
     for variable in lidar_variables[format]:
