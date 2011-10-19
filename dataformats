@@ -13,20 +13,45 @@
                 "denominator": "1: Pr2 532nm parallel NFOV", 
                 "numerator": "3: Pr2 1064nm NFOV"
             }
-        }
+        },
+		"als450": {
+			"1: Depolarization Ratio 355nm analog": {
+				"denominator": "1: Pr2 355nm parallel analog",
+				"numerator": "2: Pr2 355nm crosspol analog"
+			},
+			"2: Depolarization Ratio 355nm photocounting": {
+				"denominator": "3: Pr2 355nm parallel photocounting",
+				"numerator": "4: Pr2 355nm crosspol photocounting"
+			}			
+		}
+		
     }, 
     "lidar_variables": {
         "als450": {
-            "1: Pr2 355nm parallel": {
+            "1: Pr2 355nm parallel analog": {
                 "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
                 "polarization": "NULL", 
-                "wavelength": "355"
+                "wavelength": "355",
+				"Detection_mode": "analog"
             }, 
-            "2: Pr2 355nm crosspol": {
+            "2: Pr2 355nm crosspol analog": {
                 "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
                 "polarization": "crosspol", 
-                "wavelength": "355"
-            }
+                "wavelength": "355",
+				"Detection_mode": "analog"
+            },
+			"3: Pr2 355nm parallel photocounting": {
+				"long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
+				"polarization": "NULL",
+				"wavelength": "355",
+				"Detection_mode": "photocouting"
+			},
+			"4: Pr2 355nm crosspol photocounting": {
+				"long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
+				"polarization": "crosspol",
+				"wavelength": "355",
+				"Detection_mode": "photocouting"
+			}
         }, 
         "lna": {
             "1: Pr2 532nm parallel NFOV": {
