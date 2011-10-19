@@ -10,7 +10,7 @@ def signal_ratio(denum, num, ratio_min=0, ratio_max=10, invalid=-998):
     return d
 
 
-def lna_data_merge(lna_data1, lna_data2):
+def lidar_data_merge(lidar_data1, lidar_data2):
     """
     merge two datasets:
     merge time vectors from both datasets
@@ -19,33 +19,32 @@ def lna_data_merge(lna_data1, lna_data2):
     """
 
 
-    if lna_data1 is None and lna_data2 is None:
+    if lidar_data1 is None and lidar_data2 is None:
         return None
-    elif lna_data1 is None:
-        return lna_data2.copy()
-    elif lna_data2 is None:
-        return lna_data1.copy()
+    elif lidar_data1 is None:
+        return lidar_data2.copy()
+    elif lidar_data2 is None:
+        return lidar_data1.copy()
     else:
-        lna_data1['time'].extend(lna_data2['time'])
-        for key in lna_data1['data']:
-            if key in lna_data2['data']:
+        lidar_data1['time'].extend(lidar_data2['time'])
+        for key in lidar_data1['data']:
+            if key in lidar_data2['data']:
                 # extend data that is in both datasets
-                lna_data1['data'][key] = np.append(lna_data1['data'][key], lna_data2['data'][key], axis=0)
-        for key in lna_data2['data']:
-            if key not in lna_data1['data']:
+                lidar_data1['data'][key] = np.append(lidar_data1['data'][key], lidar_data2['data'][key], axis=0)
+        for key in lidar_data2['data']:
+            if key not in lidar_data1['data']:
                 # copy data that is just in second data
-                lna_data1['data'][key] = lna_data2['data'][key].copy()
+                lidar_data1['data'][key] = lidar_data2['data'][key].copy()
 
-        return lna_data1
+        return lidar_data1
 
 
-def lna_multiple_files_read(filelist, file_read_function):
+def lidar_multiple_files_read(filelist, file_read_function, format):
     filelist.sort()
     fulldata = None
     for f in filelist:
-        print 'Reading ', f
-        lna_data = file_read_function(f)
-        fulldata = lna_data_merge(fulldata, lna_data)
+        lidar_data = file_read_function(f, format)
+        fulldata = lidar_data_merge(fulldata, lidar_data)
 
     if fulldata is None:
         return None
