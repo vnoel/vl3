@@ -30,13 +30,10 @@ def datafile_format(datafile):
         dataformat = 'lnabinary'
         return dataformat
     else:
-        print 'not binary format'
         basefile = os.path.basename(datafile)
         if basefile.endswith('.nc'):
-            print 'ends with .nc'
             # netcdf format.
             dataformat = basefile.split('_')[0]
-            print dataformat
             if dataformat in supported_formats:
                 return dataformat
     return None
@@ -113,7 +110,6 @@ def _data_regrid_time(lna_data):
 def data_from_source(source):
     
     folder, format = source_identify(source)
-    print folder, format
     if format is None:
         data = None
         

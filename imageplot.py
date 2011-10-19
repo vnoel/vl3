@@ -35,7 +35,8 @@ from pyface.api import MessageDialog, ImageResource
 
 import matplotlib.dates as mdates
 
-import lna
+# import lna
+import lidardata
 from profile import ProfilePlot, ProfileController
 
 basesirta_path = '/bdd/SIRTA/'
@@ -61,7 +62,7 @@ class ImagePlot(HasTraits):
     
     icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/'])
     
-    data_type = Enum('Backscatter', 'Ratio')
+    data_type = Enum('Pr2', 'Ratio')
     seldata = Enum(values='data_list')
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
@@ -146,7 +147,8 @@ class ImagePlot(HasTraits):
             return
             
         print 'Log: opening ', lna_source
-        yagdata = lna.open_source(lna_source)
+        # yagdata = lna.open_source(lna_source)
+        yagdata = lidardata.data_from_source(lna_source)
 
         if yagdata is None:
             msg = MessageDialog(message="No LNA data found in this folder.", severity='warning', title='Problem')
@@ -164,7 +166,7 @@ class ImagePlot(HasTraits):
         epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
         self.epochtime_range = np.min(epochtime), np.max(epochtime)
 
-        self.data_type = 'Backscatter'
+        self.data_type = 'Pr2'
 
         self.update_data_list()
         self.seldata = self.data_list[0]
