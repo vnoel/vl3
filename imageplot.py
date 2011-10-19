@@ -42,7 +42,7 @@ from profile import ProfilePlot, ProfileController
 basesirta_path = '/bdd/SIRTA/'
 
 major_version = 0
-minor_version = 2
+minor_version = 3
 
 # change factor for colormap caxis
 cmap_change_factor = 1.5
