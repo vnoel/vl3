@@ -1,0 +1,64 @@
+{
+    "lidar_ratios": {
+        "lna": {
+            "1: Depolarization Ratio 532nm NFOV": {
+                "denominator": "1: Pr2 532nm parallel NFOV", 
+                "numerator": "2: Pr2 532nm crosspol NFOV"
+            }, 
+            "2: Depolarization Ratio 532nm WFOV": {
+                "denominator": "4: Pr2 532nm parallel WFOV", 
+                "numerator": "5: Pr2 532nm crosspol WFOV"
+            }, 
+            "3: Color Ratio": {
+                "denominator": "1: Pr2 532nm parallel NFOV", 
+                "numerator": "3: Pr2 1064nm NFOV"
+            }
+        }
+    }, 
+    "lidar_variables": {
+        "als450": {
+            "1: Pr2 355nm parallel": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "NULL", 
+                "wavelength": "355"
+            }, 
+            "2: Pr2 355nm crosspol": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "crosspol", 
+                "wavelength": "355"
+            }
+        }, 
+        "lna": {
+            "1: Pr2 532nm parallel NFOV": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "NULL", 
+                "telescope": "NFOV", 
+                "wavelength": "532"
+            }, 
+            "2: Pr2 532nm crosspol NFOV": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "crosspol", 
+                "telescope": "NFOV", 
+                "wavelength": "532"
+            }, 
+            "3: Pr2 1064nm NFOV": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "NULL", 
+                "telescope": "NFOV", 
+                "wavelength": "1064"
+            }, 
+            "4: Pr2 532nm parallel WFOV": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "NULL", 
+                "telescope": "WFOV", 
+                "wavelength": "532"
+            }, 
+            "5: Pr2 532nm crosspol WFOV": {
+                "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
+                "polarization": "crosspol", 
+                "telescope": "WFOV", 
+                "wavelength": "532"
+            }
+        }
+    }
+}
