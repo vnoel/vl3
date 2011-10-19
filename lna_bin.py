@@ -34,7 +34,7 @@ def lna_binary_folder_read(lnafolder):
 def _improve_channel_name(name, start, fov_type):
 
     if name.startswith('532') or name.startswith('1,06'):
-        newname = 'Range-Corrected Backscatter '
+        newname = 'Pr2 '
         if name.startswith('532'):
             newname = newname + '532nm '
         elif name.startswith('1,06'):
@@ -111,15 +111,15 @@ def lna_binary_file_read(lnafile):
     
     start = 1 if fov.startswith('NF') else 6
 
-    namepara = 'p%02d - Range-Corrected Backscatter 532nm ' % start + fov
-    nameperp = 'p%02d - Range-Corrected Backscatter 532nm crosspol ' % (start + 2) + fov
+    namepara = 'p%02d - Pr2 532nm ' % start + fov
+    nameperp = 'p%02d - Pr2 532nm crosspol ' % (start + 2) + fov
     # add depolarization
     depol532 = signal_ratio(data[namepara], data[nameperp])
     data['p%02d - Depolarization Ratio 532nm ' % (start + 3) + fov] = depol532
     
     # add color ratio
     total532 = data[namepara] + data[nameperp]
-    total1064 = data['p%02d - Range-Corrected Backscatter 1064nm ' % (start + 1) + fov]
+    total1064 = data['p%02d - Pr2 1064nm ' % (start + 1) + fov]
     cr = signal_ratio(total532, total1064)
     data['p%02d - Color Ratio 1064nm / 532nm ' % (start + 4) + fov] = cr
     

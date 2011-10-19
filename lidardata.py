@@ -25,17 +25,16 @@ supported_formats = ['lna', 'als450']
 
 
 def datafile_format(datafile):
-    if datafile.startswith('lna_0a_raw') and datafile.endswith('.dat'):
+    basefile = os.path.basename(datafile)
+    if basefile.startswith('lna_0a_raw') and basefile.endswith('.dat'):
         # special case for lna binary format
         dataformat = 'lnabinary'
         return dataformat
-    else:
-        basefile = os.path.basename(datafile)
-        if basefile.endswith('.nc'):
-            # netcdf format.
-            dataformat = basefile.split('_')[0]
-            if dataformat in supported_formats:
-                return dataformat
+    elif basefile.endswith('.nc'):
+        # netcdf format.
+        dataformat = basefile.split('_')[0]
+        if dataformat in supported_formats:
+            return dataformat
     return None
 
 
