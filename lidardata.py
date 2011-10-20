@@ -15,7 +15,6 @@ The variables to read in netcdf files are described in a "ini" file
 """
 
 import os
-import json
 import glob
 from lna_bin import lna_binary_file_read, lna_binary_folder_read
 from lidarnetcdf import lidar_netcdf_file_read, lidar_netcdf_folder_read
@@ -72,10 +71,10 @@ def _find_closest_time(time, timelist):
     return imin, mindelta
 
 
-def _data_regrid_time(lna_data):
+def _data_regrid_time(lidar_data):
 
-    time = lna_data['time']
-    data = lna_data['data']
+    time = lidar_data['time']
+    data = lidar_data['data']
 
     delta = time[1] - time[0]
     current = time[0]
@@ -105,9 +104,9 @@ def _data_regrid_time(lna_data):
                 newk[i, :] = data[k][iprof, :]
         newdata[k] = newk
 
-    lna_data['time'] = newtime
-    lna_data['data'] = newdata
-    return lna_data
+    lidar_data['time'] = newtime
+    lidar_data['data'] = newdata
+    return lidar_data
     
 def data_from_source(source):
     

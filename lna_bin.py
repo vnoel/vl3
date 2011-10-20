@@ -10,7 +10,6 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-# from util import signal_ratio, lna_multiple_files_read, lna_data_merge
 from util import signal_ratio, lidar_multiple_files_read, lidar_data_merge
 import numpy as np
 

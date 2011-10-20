@@ -35,7 +35,6 @@ from pyface.api import MessageDialog, ImageResource
 
 import matplotlib.dates as mdates
 
-# import lna
 from lidardata import data_from_source
 from profile import ProfilePlot, ProfileController
 
@@ -147,7 +146,6 @@ class ImagePlot(HasTraits):
             return
             
         print 'Log: opening ', data_source
-        # lidardata = lna.open_source(data_source)
         lidardata = data_from_source(data_source)
 
         if lidardata is None:
@@ -348,9 +346,9 @@ class ImagePlot(HasTraits):
 if __name__ == '__main__':
     
     if len(sys.argv) < 2:
-        sys.exit('Usage: imageplot.py lna_source')
+        sys.exit('Usage: imageplot.py data_source')
         
-    lna_source = sys.argv[1]
-    imageplot = ImagePlot(lna_source=lna_source)
+    data_source = sys.argv[1]
+    imageplot = ImagePlot(data_source=data_source)
     imageplot.configure_traits()
     

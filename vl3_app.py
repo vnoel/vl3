@@ -63,7 +63,7 @@ class ImagePlotController(Handler):
         
     def new_view(self, ui_info):
         print 'Log: New view'
-        image = ImagePlot(lna_source=self.view.data_source)
+        image = ImagePlot(data_source=self.view.data_source)
         controller = ImagePlotController(view=image)
         image.configure_traits(handler=controller)
 
