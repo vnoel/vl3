@@ -11,7 +11,7 @@ lidar_variables, lidar_ratios = read_formats()
 
 
 def lidar_netcdf_folder_read(source, format):
-    files = glob.glob(source + '/*.nc')
+    files = glob.glob(source + '/' + format + '*.nc')
     lidar_data = lidar_multiple_files_read(files, lidar_netcdf_file_read, format)
     return lidar_data
     return None
@@ -45,6 +45,8 @@ def read_variable(nc, varproperties):
     
     
 def lidar_netcdf_file_read(source, format):
+    
+    print 'Reading ' + source
     
     nc = netcdf_file(source)
     

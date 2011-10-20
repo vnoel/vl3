@@ -34,9 +34,9 @@ def datafile_format(datafile):
         return dataformat
     elif basefile.endswith('.nc'):
         # netcdf format.
-        dataformat = basefile.split('_')[0]
-        if dataformat in supported_formats:
-            return dataformat
+        for dataformat in supported_formats:
+            if basefile.startswith(dataformat):
+                return dataformat
     return None
 
 
@@ -56,8 +56,10 @@ def source_identify(source):
         format = None
         while format is None:
             format = datafile_format(files.pop())
+        print 'Source is folder, datatype ' + format
     else:
         format = datafile_format(source)
+        print 'Source is file, datatype ' + format
 
     return folder, format
     
