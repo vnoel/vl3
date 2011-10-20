@@ -6,7 +6,6 @@ from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
 from util import signal_ratio, lidar_multiple_files_read, read_formats
-import json
 
 
 lidar_variables, lidar_ratios = read_formats()
@@ -43,7 +42,7 @@ def read_variable(nc, varproperties):
 
             return variable
             
-    print 'Could not find variable in netcdf file'
+    print 'Error : Could not find in netcdf file variable with properties', varproperties
     
     
 def lidar_netcdf_file_read(source, format):
