@@ -31,7 +31,7 @@
 			"Detection_mode": "photocouting"
 		}
     }, 
-    "lna": {
+    "lna_1a_PR2_v02": {
         "1: Pr2 532nm parallel NFOV": {
             "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
             "polarization": "NULL", 
@@ -73,7 +73,7 @@
 "2nd_section_description": "2nd section 'lidar_ratios' contains the description of ratios (depolarisation ratio, color ratio) for a given instrument as a function of variables using vl3 names (as defined in the 1st section). format: {'instrument1' : {'ratio name' : {'numerator':'variable1', 'denominator':'variable2'}}, 'instrument2':... }",
 
   "lidar_ratios": {
-        "lna": {
+        "lna_1a_PR2_v02": {
             "1: Depolarization Ratio 532nm NFOV": {
                 "denominator": "1: Pr2 532nm parallel NFOV", 
                 "numerator": "2: Pr2 532nm crosspol NFOV"
