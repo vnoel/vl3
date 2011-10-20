@@ -36,7 +36,7 @@ from pyface.api import MessageDialog, ImageResource
 import matplotlib.dates as mdates
 
 # import lna
-import lidardata
+from lidardata import data_from_source
 from profile import ProfilePlot, ProfileController
 
 basesirta_path = '/bdd/SIRTA/'
@@ -111,7 +111,7 @@ class ImagePlot(HasTraits):
     )
     
     
-    def __init__(self, lna_source=None, base_folder=basesirta_path):
+    def __init__(self, data_source=None, base_folder=basesirta_path):
         
         self.pcolor = None
         self.pcolor_data = None
@@ -119,18 +119,18 @@ class ImagePlot(HasTraits):
 
         self.save_image_file = os.getcwd()
 
-        if lna_source is None:
+        if data_source is None:
             if os.path.isdir(base_folder):
                 self.directory_to_load = base_folder
             else:
                 self.directory_to_load = os.getcwd()
         else:
-            if os.path.isdir(lna_source):
-                self.directory_to_load = lna_source
+            if os.path.isdir(data_source):
+                self.directory_to_load = data_source
             else:
-                self.directory_to_load = os.path.dirname(lna_source)
+                self.directory_to_load = os.path.dirname(data_source)
             
-            self.open_data(lna_source)
+            self.open_data(data_source)
                 
 
     def update_window_title(self):
@@ -141,25 +141,25 @@ class ImagePlot(HasTraits):
         return str(self.date.date()) + ' : ' + self.seldata        
         
         
-    def open_data(self, lna_source):
+    def open_data(self, data_source):
         
-        if lna_source is None:
+        if data_source is None:
             return
             
-        print 'Log: opening ', lna_source
-        # yagdata = lna.open_source(lna_source)
-        yagdata = lidardata.data_from_source(lna_source)
+        print 'Log: opening ', data_source
+        # lidardata = lna.open_source(data_source)
+        lidardata = data_from_source(data_source)
 
-        if yagdata is None:
+        if lidardata is None:
             msg = MessageDialog(message="No LNA data found in this folder.", severity='warning', title='Problem')
             msg.open()
             return
                 
-        self.datetime = yagdata['time']
-        self.alt = yagdata['alt']
-        self.data = yagdata['data']
-        self.date = yagdata['date']
-        self.data_source = lna_source
+        self.datetime = lidardata['time']
+        self.alt = lidardata['alt']
+        self.data = lidardata['data']
+        self.date = lidardata['date']
+        self.data_source = data_source
 
         self.alt_range = np.min(self.alt), np.max(self.alt)
 
