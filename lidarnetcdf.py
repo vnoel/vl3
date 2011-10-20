@@ -7,7 +7,6 @@ import numpy as np
 from datetime import datetime
 from util import signal_ratio, lidar_multiple_files_read, read_formats
 
-
 lidar_variables, lidar_ratios = read_formats()
 
 

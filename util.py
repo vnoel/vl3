@@ -1,3 +1,12 @@
+"""
+util.py
+
+VNoel 2011-10-20
+
+contains utility functions used in other places
+
+"""
+
 import numpy as np
 import json
 import sys
@@ -53,6 +62,8 @@ def lidar_multiple_files_read(filelist, file_read_function, format):
 
     return fulldata
 
+
+# TODO: it would be nice to check if the dictionaries in dataformats are valid
 
 def read_supported_formats():
     f = open(sys.path[0]+'/dataformats', 'r')
