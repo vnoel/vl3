@@ -159,10 +159,14 @@ class ImagePlot(HasTraits):
         self.date = lidardata['date']
         self.data_source = data_source
 
+        print self.datetime[0], self.datetime[-1]
+        # jusqu'ici hour is ok
+
         self.alt_range = np.min(self.alt), np.max(self.alt)
 
         epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
         self.epochtime_range = np.min(epochtime), np.max(epochtime)
+        print mdates.num2date(mdates.epoch2num(self.epochtime_range))
 
         self.data_type = 'Pr2'
 
@@ -204,7 +208,7 @@ class ImagePlot(HasTraits):
         self.img = img
         self.fix_color_scale(self.data[self.seldata])
 
-        plot.y_axis.title='Altitude [km]'
+        plot.y_axis.title='Range [km]'
         plot.title=self.make_plot_title()
         self.update_window_title()
         
