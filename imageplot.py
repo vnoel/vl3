@@ -55,13 +55,14 @@ def add_date_axis(plot):
 class ImagePlot(HasTraits):
     
     data_source = ''
+    has_ratio = False
     data_list = List([])
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
     
     icon_img = ImageResource('icon', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/', sys.path[0]])
     
-    data_type = Enum('Pr2', 'Ratio')
+    data_type = Enum('Signal', 'Ratio')
     seldata = Enum(values='data_list')
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
@@ -72,7 +73,7 @@ class ImagePlot(HasTraits):
 
     traits_view = View(
         HGroup(
-            UItem('data_type', visible_when=''),
+            UItem('data_type', visible_when='has_ratio is True'),
             UItem('seldata', springy=True),
             visible_when='plot_title != ""'
         ),
@@ -145,7 +146,6 @@ class ImagePlot(HasTraits):
         if data_source is None:
             return
             
-        print 'Log: opening ', data_source
         lidardata = data_from_source(data_source)
 
         if lidardata is None:
@@ -158,17 +158,14 @@ class ImagePlot(HasTraits):
         self.data = lidardata['data']
         self.date = lidardata['date']
         self.data_source = data_source
-
-        print self.datetime[0], self.datetime[-1]
-        # jusqu'ici hour is ok
+        self.has_ratio = lidardata['has_ratio']
 
         self.alt_range = np.min(self.alt), np.max(self.alt)
 
         epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
         self.epochtime_range = np.min(epochtime), np.max(epochtime)
-        print mdates.num2date(mdates.epoch2num(self.epochtime_range))
 
-        self.data_type = 'Pr2'
+        self.data_type = 'Signal'
 
         self.update_data_list()
         self.seldata = self.data_list[0]
@@ -182,8 +179,13 @@ class ImagePlot(HasTraits):
         
         data_list = []
         for key in self.data.keys():
-            if self.data_type in key:
-                data_list.append(key)
+            if 'Ratio' in key:
+                if self.data_type is 'Ratio':
+                    data_list.append(key)
+            else:
+                if self.data_type is not 'Ratio':
+                    data_list.append(key)
+                    
         data_list.sort()
         self.data_list = data_list
         

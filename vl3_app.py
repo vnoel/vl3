@@ -19,6 +19,9 @@ from traitsui.api import Handler
 
 from imageplot import ImagePlot, minor_version, major_version
 
+from util import read_supported_formats
+supported_formats = read_supported_formats()
+
 
 class ImagePlotController(Handler):
     
@@ -31,7 +34,6 @@ class ImagePlotController(Handler):
 
 
     def open_source(self, source_type):
-        print 'Log: Select ', source_type
         dlg = DirectoryDialog if source_type=='directory' else FileDialog
         fd = dlg(action='open', default_path=self.view.directory_to_load)
         if fd.open() == OK:
@@ -48,7 +50,6 @@ class ImagePlotController(Handler):
         
         
     def save(self, ui_info):
-        print 'Log: Saving image'
         fd = FileDialog(action='save as', default_path=self.view.save_image_file)
         if fd.open() == OK:
             print 'saving to ', fd.path
@@ -56,21 +57,18 @@ class ImagePlotController(Handler):
             
         
     def new_empty_view(self, ui_info):
-        print 'Log: New empty view'
         image = ImagePlot()
         controller = ImagePlotController(view=image)
         image.configure_traits(handler=controller)
 
         
     def new_view(self, ui_info):
-        print 'Log: New view'
         image = ImagePlot(data_source=self.view.data_source)
         controller = ImagePlotController(view=image)
         image.configure_traits(handler=controller)
 
     
     def about_dialog(self, ui_info):
-        print 'Log: opening about dialog'
         img = ImageResource('about', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/'])
         text=['VL3 - View Lidar 3 - v%d.%d\n' % (major_version, minor_version), 
             u'© VNoel 2001-2011 - LMD/CNRS/IPSL\n', 
@@ -85,7 +83,6 @@ class ImagePlotController(Handler):
         
         
     def close(self, info, is_ok):
-        print 'Log: Closing'
         # would be nice to close the profile plot
         # but easier said than done
         # tip: info.ui.dispose()
@@ -98,6 +95,11 @@ if __name__ == '__main__':
         yagfile = sys.argv[1]
     else:
         yagfile = None
+    
+    print 'vl3 - v.%d.%d' % (major_version, minor_version)
+    print 'Supported data formats :'
+    for key in supported_formats:
+        print '\t'+key
     
     imageapp = ImagePlot(yagfile)
     controller = ImagePlotController(view=imageapp)

@@ -1,11 +1,14 @@
 {
 
-"file_description": "This file contains definitions of netcdf file formats for vl3. it is in 2 sections. ",
+"file_description": "This file contains definitions of netcdf file formats for vl3. It contains a header followed by two sections. The header describes possible variable names for vertical (e.g. range, altitude, height) and horizontal (e.g. time) dimensions.",
+
+"vertical": ["range", "height"],
+"horizontal": ["time"],
 
 "1st_section_description": "1st section 'lidar_variables' contains the description of variables to read in netcdf files for a given instrument. It maps variable names used by vl3 to variable description based on the metadata in the netcdf file. format: {'instrument1' : {'vl3 variable name' : {'metadata1':'value', 'metadata2':'value', ...}}, 'instrument2':... }.",
 
 "lidar_variables": {
-    "basta": {
+    "basta_1a": {
         "1: BASTA Pulse pair reflectivity": {
             "long_name": "Pulse pair reflectivity"
         },

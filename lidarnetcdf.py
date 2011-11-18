@@ -5,10 +5,18 @@ import glob
 from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
-from util import signal_ratio, lidar_multiple_files_read, read_formats
+from util import signal_ratio, lidar_multiple_files_read, read_formats, read_supported_vertical_variables
 
+# contains the format definitions
 lidar_variables, lidar_ratios = read_formats()
+vertical_variables = read_supported_vertical_variables()
 
+def find_vertical_variable(nc):
+    for varname in nc.variables:
+        if varname in vertical_variables:
+            return varname
+    return None
+    
 
 def lidar_netcdf_folder_read(source, format):
     files = glob.glob(source + '/' + format + '*.nc')
@@ -34,10 +42,11 @@ def read_variable(nc, varproperties):
                 else:
                     found.append(False)
         if all(found):
-            variable = netcdfvar[:,:].copy()
+            variable = np.array(netcdfvar[:,:].copy(), dtype=np.float16)
 
-            idx = (variable==netcdfvar.missing_value)
-            variable[idx] = np.nan
+            if hasattr(netcdfvar, 'missing_value'):
+                idx = (variable==netcdfvar.missing_value)
+                variable[idx] = np.nan
 
             return variable
             
@@ -45,8 +54,6 @@ def read_variable(nc, varproperties):
     
     
 def lidar_netcdf_file_read(source, format):
-    
-    print 'Reading ' + source
     
     nc = netcdf_file(source)
     
@@ -56,12 +63,19 @@ def lidar_netcdf_file_read(source, format):
     minutes = np.floor(hourfraction * 60.)
     seconds = hourfraction * 3600 - minutes * 60.
 
-    y = nc.year
-    m = nc.month
-    d = nc.day
+    if hasattr(nc, 'year'):
+        y = nc.year
+        m = nc.month
+        d = nc.day
+    else:
+        print 'This netcdf file has not global attribute year'
+        print 'setting default date as 2006, 1, 1'
+        y, m, d = 2006,1,1
+
     # bug in ALS data
     if d > 1900:
         y, d = d, y
+        
     date = datetime(y, m, d)
     
     dates = []
@@ -70,7 +84,13 @@ def lidar_netcdf_file_read(source, format):
         
     time = dates
     
-    alt = nc.variables['range'][:]
+    vertical_varname = find_vertical_variable(nc)
+    print 'Found vertical variable : ', vertical_varname
+    if vertical_varname is None:
+        # we have a problem
+        return None
+        
+    alt = nc.variables[vertical_varname][:]
     if np.max(alt) > 1000:
         alt = alt / 1000.
     
@@ -86,8 +106,11 @@ def lidar_netcdf_file_read(source, format):
             num_name = lidar_ratios[format][ratio]['numerator']
             denum_name = lidar_ratios[format][ratio]['denominator']
             lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
+        has_ratio = True
+    else:
+        has_ratio = False
     
-    data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format}
+    data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format, 'has_ratio':has_ratio}
     
     return data
                 

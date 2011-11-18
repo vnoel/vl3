@@ -75,7 +75,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     return r[idx], data
             
     
-def lna_binary_file_read(lnafile, format):
+def lna_binary_file_read(lnafile):
     """
     read lna data from a file in binary format
     fix names of datasets
@@ -123,7 +123,7 @@ def lna_binary_file_read(lnafile, format):
     cr = signal_ratio(total532, total1064)
     data['p%02d - Color Ratio 1064nm / 532nm ' % (start + 4) + fov] = cr
     
-    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary'}
+    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary', 'has_ratio':True}
         
     return lna_data
     
