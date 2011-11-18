@@ -88,3 +88,7 @@ def read_supported_vertical_variables():
     vertical_vars = _read_variable_in_formats('vertical')
     return vertical_vars
     
+def read_supported_horizontal_variables():
+    horizontal_var = _read_variable_in_formats('horizontal')
+    return horizontal_var
+    

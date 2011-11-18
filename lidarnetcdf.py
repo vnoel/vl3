@@ -5,15 +5,25 @@ import glob
 from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
-from util import signal_ratio, lidar_multiple_files_read, read_formats, read_supported_vertical_variables
+from util import signal_ratio, lidar_multiple_files_read, read_formats
+from util import read_supported_vertical_variables, read_supported_horizontal_variables
 
 # contains the format definitions
 lidar_variables, lidar_ratios = read_formats()
 vertical_variables = read_supported_vertical_variables()
+horizontal_variables = read_supported_horizontal_variables()
+
 
 def find_vertical_variable(nc):
     for varname in nc.variables:
         if varname in vertical_variables:
+            return varname
+    return None
+    
+
+def find_horizontal_variable(nc):
+    for varname in nc.variables:
+        if varname in horizontal_variables:
             return varname
     return None
     
@@ -53,11 +63,12 @@ def read_variable(nc, varproperties):
     print 'Error : Could not find in netcdf file variable with properties', varproperties
     
     
-def lidar_netcdf_file_read(source, format):
+def netcdf_read_time(nc):
     
-    nc = netcdf_file(source)
+    horizontal_varname = find_horizontal_variable(nc)
+    print 'Found horizontal variable : ', horizontal_varname
     
-    time = nc.variables['time'][:]
+    time = nc.variables[horizontal_varname][:]
     hour = np.floor(time)
     hourfraction = time - hour
     minutes = np.floor(hourfraction * 60.)
@@ -83,6 +94,11 @@ def lidar_netcdf_file_read(source, format):
         dates.append(datetime(y, m, d, hour[i], minutes[i], seconds[i]))
         
     time = dates
+
+    return date, time
+    
+    
+def netcdf_read_altitude(nc):
     
     vertical_varname = find_vertical_variable(nc)
     print 'Found vertical variable : ', vertical_varname
@@ -94,18 +110,39 @@ def lidar_netcdf_file_read(source, format):
     if np.max(alt) > 1000:
         alt = alt / 1000.
     
+    return alt
+    
+    
+def netcdf_read_data(nc, format):
+    
     lidar_data = {}
     for variable in lidar_variables[format]:
         properties = lidar_variables[format][variable]
         lidar_data[variable] = read_variable(nc, properties)
         
+    return lidar_data
+    
+    
+def lidar_data_compute_ratios(lidar_data, format):
+    
+    for ratio in lidar_ratios[format]:
+        num_name = lidar_ratios[format][ratio]['numerator']
+        denum_name = lidar_ratios[format][ratio]['denominator']
+        lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
+    
+    
+def lidar_netcdf_file_read(source, format):
+    
+    nc = netcdf_file(source)
+    
+    date, time = netcdf_read_time(nc)
+    alt = netcdf_read_altitude(nc)
+    lidar_data = netcdf_read_data(nc, format)
+        
     nc.close()
     
     if format in lidar_ratios:
-        for ratio in lidar_ratios[format]:
-            num_name = lidar_ratios[format][ratio]['numerator']
-            denum_name = lidar_ratios[format][ratio]['denominator']
-            lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
+        lidar_data_compute_ratios(lidar_data, format)
         has_ratio = True
     else:
         has_ratio = False
@@ -113,6 +150,4 @@ def lidar_netcdf_file_read(source, format):
     data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format, 'has_ratio':has_ratio}
     
     return data
-                
-        
-    
+
