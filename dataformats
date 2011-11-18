@@ -1,6 +1,8 @@
 {
 
-"file_description": "This file contains definitions of netcdf file formats for vl3. It contains a header followed by two sections. The header describes possible variable names for vertical (e.g. range, altitude, height) and horizontal (e.g. time) dimensions.",
+"file_description": "This file contains definitions of netcdf file formats for vl3. It contains a header followed by two sections.",
+
+"header_description": "The header describes possible variable names for vertical (e.g. range, altitude, height) and horizontal (e.g. time) dimensions.",
 
 "vertical": ["range", "height"],
 "horizontal": ["time"],

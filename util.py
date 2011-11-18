@@ -65,7 +65,7 @@ def lidar_multiple_files_read(filelist, file_read_function, format):
 
 # TODO: it would be nice to check if the dictionaries in dataformats are valid
 
-def read_variable_in_formats(varname):
+def _read_variable_in_formats(varname):
     f = open(sys.path[0] + '/dataformats', 'r')
     formats = json.load(f)
     f.close()
@@ -73,27 +73,18 @@ def read_variable_in_formats(varname):
     
 
 def read_supported_formats():
-    # f = open(sys.path[0]+'/dataformats', 'r')
-    # formats = json.load(f)
-    # f.close()
-    # lidar_variables = formats['lidar_variables']
-    lidar_variables = read_variable_in_formats('lidar_variables')
+    lidar_variables = _read_variable_in_formats('lidar_variables')
     supported_formats = lidar_variables.keys()
     return supported_formats
     
     
 def read_formats():
-    # f = open(sys.path[0] + '/dataformats', 'r')
-    # formats = json.load(f)
-    # f.close()
-    # lidar_variables = formats['lidar_variables']
-    # lidar_ratios = formats['lidar_ratios']
-    lidar_variables = read_variable_in_formats('lidar_variables')
-    lidar_ratios = read_variable_in_formats('lidar_ratios')
+    lidar_variables = _read_variable_in_formats('lidar_variables')
+    lidar_ratios = _read_variable_in_formats('lidar_ratios')
     return lidar_variables, lidar_ratios
     
     
 def read_supported_vertical_variables():
-    vertical_vars = read_variable_in_formats('vertical')
+    vertical_vars = _read_variable_in_formats('vertical')
     return vertical_vars
     
