@@ -5,31 +5,49 @@
 "1st_section_description": "1st section 'lidar_variables' contains the description of variables to read in netcdf files for a given instrument. It maps variable names used by vl3 to variable description based on the metadata in the netcdf file. format: {'instrument1' : {'vl3 variable name' : {'metadata1':'value', 'metadata2':'value', ...}}, 'instrument2':... }.",
 
 "lidar_variables": {
+    "basta": {
+        "1: BASTA Pulse pair reflectivity": {
+            "long_name": "Pulse pair reflectivity"
+        },
+        "2: BASTA Pulse pair Doppler velocity": {
+            "long_name": "Pulse pair Doppler velocity"
+        }
+    }, 
+    "wlscerea": {
+        "1: WLS Cerea upward_air_velocity": {
+            "long_name": "w-component (vertical) of wind"
+        }
+    }, 
+    "cl31": {
+        "1: Pr2 910nm parallel analog": {
+            "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)"
+        }
+    }, 
     "als450": {
         "1: Pr2 355nm parallel analog": {
             "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
             "polarization": "NULL", 
             "wavelength": "355",
-			"Detection_mode": "analog"
+	    "Detection_mode": "analog"
         }, 
         "2: Pr2 355nm crosspol analog": {
             "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)", 
             "polarization": "crosspol", 
             "wavelength": "355",
-			"Detection_mode": "analog"
+	    "Detection_mode": "analog"
         },
-		"3: Pr2 355nm parallel photocounting": {
-			"long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
-			"polarization": "NULL",
-			"wavelength": "355",
-			"Detection_mode": "photocouting"
-		},
-		"4: Pr2 355nm crosspol photocounting": {
-			"long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
-			"polarization": "crosspol",
-			"wavelength": "355",
-			"Detection_mode": "photocouting"
-		}
+	"3: Pr2 355nm parallel photocounting": {
+	    "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
+	    "polarization": "NULL",
+	    "wavelength": "355",
+	    "Detection_mode": "photocouting"
+	},
+	"4: Pr2 355nm crosspol photocounting": {
+	    "long_name": "Apparent (not normalized) range-corrected back-scattered power (P*R*R)",
+	    "polarization": "crosspol",
+	    "wavelength": "355",
+	    "Detection_mode": "photocouting"
+	}
     }, 
     "lna_1a_PR2_v02": {
         "1: Pr2 532nm parallel NFOV": {
@@ -86,20 +104,20 @@
                 "denominator": "1: Pr2 532nm parallel NFOV", 
                 "numerator": "3: Pr2 1064nm NFOV"
             },
-			"4: Color Ratio WFOV": {
-				"denominator": "4: Pr2 532nm parallel WFOV",
-				"numerator": "6: Pr2 1064nm WFOV"
+	    "4: Color Ratio WFOV": {
+		"denominator": "4: Pr2 532nm parallel WFOV",
+		"numerator": "6: Pr2 1064nm WFOV"
 			}
         },
-		"als450": {
-			"1: Depolarization Ratio 355nm analog": {
-				"denominator": "1: Pr2 355nm parallel analog",
-				"numerator": "2: Pr2 355nm crosspol analog"
-			},
-			"2: Depolarization Ratio 355nm photocounting": {
-				"denominator": "3: Pr2 355nm parallel photocounting",
-				"numerator": "4: Pr2 355nm crosspol photocounting"
-			}			
-		}	
-    }
+	"als450": {
+	    "1: Depolarization Ratio 355nm analog": {
+		"denominator": "1: Pr2 355nm parallel analog",
+		"numerator": "2: Pr2 355nm crosspol analog"
+	     },
+	    "2: Depolarization Ratio 355nm photocounting": {
+		"denominator": "3: Pr2 355nm parallel photocounting",
+		"numerator": "4: Pr2 355nm crosspol photocounting"
+		}			
+	}	
+  }
 }
