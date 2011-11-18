@@ -100,6 +100,7 @@ if __name__ == '__main__':
     print 'Supported data formats :'
     for key in supported_formats:
         print '\t'+key
+    print '\tlna_0a'
     
     imageapp = ImagePlot(yagfile)
     controller = ImagePlotController(view=imageapp)

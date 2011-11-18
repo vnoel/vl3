@@ -41,7 +41,7 @@ from profile import ProfilePlot, ProfileController
 basesirta_path = '/bdd/SIRTA/'
 
 major_version = 0
-minor_version = 3
+minor_version = 4
 
 # change factor for colormap caxis
 cmap_change_factor = 1.5
@@ -90,8 +90,8 @@ class ImagePlot(HasTraits):
             Menu(
                 CloseAction,
                 Separator(),
-                Action(name='Open directory (LNA/ALS)...', action='open_dir'),
-                Action(name='Open LNA/ALS file...', action='open_file'),
+                Action(name='Open directory of data files...', action='open_dir'),
+                Action(name='Open single data file...', action='open_file'),
                 Action(name='Save Plot...', action='save'),
                 name='File',
             ),
