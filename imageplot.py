@@ -33,9 +33,7 @@ from enable.api import ComponentEditor
 
 from pyface.api import MessageDialog, ImageResource
 
-import matplotlib.dates as mdates
-
-from lidardata import data_from_source
+from lidardata import LidarData, InvalidFormat
 from profile import ProfilePlot, ProfileController
 
 basesirta_path = '/bdd/SIRTA/'
@@ -55,7 +53,6 @@ def add_date_axis(plot):
 class ImagePlot(HasTraits):
     
     data_source = ''
-    has_ratio = False
     data_list = List([])
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
@@ -73,7 +70,7 @@ class ImagePlot(HasTraits):
 
     traits_view = View(
         HGroup(
-            UItem('data_type', visible_when='has_ratio is True'),
+            UItem('data_type', visible_when='lidardata.has_ratio is True'),
             UItem('seldata', springy=True),
             visible_when='plot_title != ""'
         ),
@@ -83,15 +80,15 @@ class ImagePlot(HasTraits):
             UItem('reset_zoom'),
             UItem('scale_less'),
             UItem('scale_more'),
-            Item('log_scale', label='Log Scale', visible_when='"Backscatter" in data_type'),
+            Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
             visible_when='plot_title != ""'
         ),
         menubar=MenuBar(
             Menu(
                 CloseAction,
                 Separator(),
+                Action(name='Open data file...', action='open_file'),
                 Action(name='Open directory of data files...', action='open_dir'),
-                Action(name='Open single data file...', action='open_file'),
                 Action(name='Save Plot...', action='save'),
                 name='File',
             ),
@@ -134,11 +131,11 @@ class ImagePlot(HasTraits):
                 
 
     def update_window_title(self):
-        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.date.date())
+        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
         
 
     def make_plot_title(self):
-        return str(self.date.date()) + ' : ' + self.seldata        
+        return str(self.lidardata.date.date()) + ' : ' + self.seldata        
         
         
     def open_data(self, data_source):
@@ -146,25 +143,15 @@ class ImagePlot(HasTraits):
         if data_source is None:
             return
             
-        lidardata = data_from_source(data_source)
-
-        if lidardata is None:
-            msg = MessageDialog(message="No LNA data found in this folder.", severity='warning', title='Problem')
+        try:
+            lidardata = LidarData(from_source=data_source)
+        except InvalidFormat as inst:
+            msg = MessageDialog(message=inst.args[0], severity='warning', title='Problem')
             msg.open()
             return
+            
+        self.lidardata = lidardata
                 
-        self.datetime = lidardata['time']
-        self.alt = lidardata['alt']
-        self.data = lidardata['data']
-        self.date = lidardata['date']
-        self.data_source = data_source
-        self.has_ratio = lidardata['has_ratio']
-
-        self.alt_range = np.min(self.alt), np.max(self.alt)
-
-        epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
-        self.epochtime_range = np.min(epochtime), np.max(epochtime)
-
         self.data_type = 'Signal'
 
         self.update_data_list()
@@ -178,7 +165,7 @@ class ImagePlot(HasTraits):
     def update_data_list(self):
         
         data_list = []
-        for key in self.data.keys():
+        for key in self.lidardata.data.keys():
             if 'Ratio' in key:
                 if self.data_type is 'Ratio':
                     data_list.append(key)
@@ -194,21 +181,23 @@ class ImagePlot(HasTraits):
         
         data = chaco.ArrayPlotData()
 
-        data.set_data('image', self.data[self.seldata].T)
+        data.set_data('image', self.lidardata.data[self.seldata].T)
+        print np.shape(self.lidardata.data[self.seldata])
+        print self.seldata
         self.pcolor_data = data
         
-        self.cmin = np.nanmin(self.data[self.seldata])
-        self.cmax = np.nanmax(self.data[self.seldata])
+        self.cmin = np.nanmin(self.lidardata.data[self.seldata])
+        self.cmax = np.nanmax(self.lidardata.data[self.seldata])
         
         plot = chaco.Plot(data, padding=40)
 
         # DON'T FORGET THE [0] to get a handle to the actual plot
         img = plot.img_plot('image', name=self.plot_title, colormap=chaco.jet,
-                            xbounds=self.epochtime_range,
-                            ybounds=self.alt_range)[0]
+                            xbounds=self.lidardata.epochtime_range,
+                            ybounds=self.lidardata.alt_range)[0]
         img.overlays.append(ZoomTool(img, tool_mode='box', drag_buttons='left', always_on=True))
         self.img = img
-        self.fix_color_scale(self.data[self.seldata])
+        self.fix_color_scale(self.lidardata.data[self.seldata])
 
         plot.y_axis.title='Range [km]'
         plot.title=self.make_plot_title()
@@ -237,17 +226,16 @@ class ImagePlot(HasTraits):
     
     def fix_color_scale(self, data_to_show):
 
-        if self.log_scale:
-            # reset the color scale minimum
-            self.img.color_mapper.range.set_bounds('auto', np.nanmax(data_to_show))
-            # be helpful
-            self.img.color_mapper.range.set_bounds(self.img.color_mapper.range.low / 2., np.nanmax(data_to_show))
+        min = np.ma.min(np.ma.masked_invalid(data_to_show))
+        max = np.ma.max(np.ma.masked_invalid(data_to_show))
+        range = max-min
+
+        if not self.log_scale:
+            datarange = [min, max - range*0.25]
         else:
-            # reset the color scale maximum
-            self.img.color_mapper.range.set_bounds(np.nanmin(data_to_show), 'auto')
-            # be helpful
-            self.img.color_mapper.range.set_bounds(np.nanmin(data_to_show), self.img.color_mapper.range.high/2.)
-            
+            datarange = [min + range*0.25, max]
+
+        self.img.color_mapper.range.set_bounds(datarange[0], datarange[1])            
         self.cmin, self.cmax = self.img.color_mapper.range.low, self.img.color_mapper.range.high
 
     
@@ -257,27 +245,34 @@ class ImagePlot(HasTraits):
         self.seldata = self.data_list[0]
         if self.data_type is 'Ratio':
             self.log_scale = False
+        else:
+            self.log_scale = True
             
         
     def _seldata_changed(self):
         
-        if self.pcolor_data:
-            data_to_show = self.data[self.seldata].T.copy()
+        if self.pcolor_data is None:
+            return 
+
+        if self.data_type is 'Ratio':
+            self.log_scale = False
             
-            if self.log_scale:
-                # to avoid error message when doing log10(x<0)
-                idx_pos = data_to_show > 0
-                idx_neg = data_to_show <= 0
-                data_to_show[idx_pos] = np.log10(data_to_show[idx_pos])
-                data_to_show[idx_neg] = np.nan
-            
-            self.pcolor_data.set_data('image', data_to_show)
-            self.pcolor.title = self.make_plot_title()
-            
-            self.fix_color_scale(data_to_show)
+        data_to_show = self.lidardata.data[self.seldata].T.copy()
+        
+        if self.log_scale:
+            # to avoid error message when doing log10(x<0)
+            idx_pos = data_to_show > 0
+            idx_neg = data_to_show <= 0
+            data_to_show[idx_pos] = np.log10(data_to_show[idx_pos])
+            data_to_show[idx_neg] = np.nan
+        
+        self.pcolor_data.set_data('image', data_to_show)
+        self.pcolor.title = self.make_plot_title()
+        
+        self.fix_color_scale(data_to_show)
             
     def _profile_data(self, iprof):
-        profile_data = self.data[self.seldata][iprof,:].copy()
+        profile_data = self.lidardata.data[self.seldata][iprof,:].copy()
         if self.log_scale:
             # little dance to avoid warnings for log10(x<0)
             idx_pos = profile_data > 0
@@ -291,7 +286,7 @@ class ImagePlot(HasTraits):
         
         if self.profileplot is None:
             profile_data = self._profile_data(0)
-            self.profileplot = ProfilePlot(self, profiledata=profile_data, alt=self.alt, profname=0)
+            self.profileplot = ProfilePlot(self, profiledata=profile_data, alt=self.lidardata.alt, profname=0)
             self.profilecontroller = ProfileController(view=self.profileplot)
 
             # Add line inspector  
@@ -303,8 +298,8 @@ class ImagePlot(HasTraits):
         
     def _reset_zoom_fired(self):
         
-        self.pcolor.index_range.set_bounds(*self.epochtime_range)
-        self.pcolor.value_range.set_bounds(*self.alt_range)
+        self.pcolor.index_range.set_bounds(*self.lidardata.epochtime_range)
+        self.pcolor.value_range.set_bounds(*self.lidardata.alt_range)
     
     
     def _scale_more_fired(self):
@@ -335,7 +330,7 @@ class ImagePlot(HasTraits):
             if self.profileplot is not None:
                 iprof = self.img.index.metadata['selections'][0]
                 profile_data = self._profile_data(iprof)
-                self.profileplot.set_profile(profile_data, self.alt, self.datetime[iprof])
+                self.profileplot.set_profile(profile_data, self.lidardata.alt, self.lidardata.datetime[iprof])
     
     
     def _log_scale_changed(self):
