@@ -39,10 +39,10 @@ from profile import ProfilePlot, ProfileController
 basesirta_path = '/bdd/SIRTA/'
 
 major_version = 0
-minor_version = 4
+minor_version = 5
 
 # change factor for colormap caxis
-cmap_change_factor = 1.5
+cmap_change_factor = 2.
 
 
 def add_date_axis(plot):
@@ -52,7 +52,6 @@ def add_date_axis(plot):
 
 class ImagePlot(HasTraits):
     
-    data_source = ''
     data_list = List([])
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
@@ -87,9 +86,9 @@ class ImagePlot(HasTraits):
             Menu(
                 CloseAction,
                 Separator(),
-                Action(name='Open data file...', action='open_file'),
-                Action(name='Open directory of data files...', action='open_dir'),
-                Action(name='Save Plot...', action='save'),
+                Action(name='&Open data file...', action='open_file', accelerator='Ctrl+O'),
+                Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
+                Action(name='Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
                 name='File',
             ),
             Menu(
@@ -153,8 +152,7 @@ class ImagePlot(HasTraits):
         self.lidardata = lidardata
                 
         self.data_type = 'Signal'
-
-        self.update_data_list()
+        self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
 
         self.plot_title = self.make_plot_title()
@@ -162,15 +160,15 @@ class ImagePlot(HasTraits):
         self.pcolor, self.container = self.pcolor_create()
                 
         
-    def update_data_list(self):
+    def update_data_list(self, data_type):
         
         data_list = []
         for key in self.lidardata.data.keys():
             if 'Ratio' in key:
-                if self.data_type is 'Ratio':
+                if data_type is 'Ratio':
                     data_list.append(key)
             else:
-                if self.data_type is not 'Ratio':
+                if data_type is not 'Ratio':
                     data_list.append(key)
                     
         data_list.sort()
@@ -241,13 +239,11 @@ class ImagePlot(HasTraits):
     
     def _data_type_changed(self):
         
-        self.update_data_list()
+        self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
         if self.data_type is 'Ratio':
             self.log_scale = False
-        else:
-            self.log_scale = True
-            
+        
         
     def _seldata_changed(self):
         
