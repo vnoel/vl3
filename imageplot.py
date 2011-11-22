@@ -72,7 +72,7 @@ class ImagePlot(HasTraits):
 
     traits_view = View(
         # this bit of the view is only visible when there's no data
-        # ie at startup
+        # ie at startup and empty views
         HGroup(
             UItem('open_file_button', padding=15, springy=True),
             UItem('open_folder_button', padding=15, springy=True),
@@ -99,6 +99,7 @@ class ImagePlot(HasTraits):
             Menu(
                 CloseAction,
                 Separator(),
+                Action(name='New window', action='new_empty_view'),
                 Action(name='&Open data file...', action='open_file', accelerator='Ctrl+O'),
                 Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
                 Action(name='Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
@@ -106,7 +107,6 @@ class ImagePlot(HasTraits):
             ),
             Menu(
                 Action(name='New view', action='new_view'),
-                Action(name='New empty view', action='new_empty_view'),
                 name='View',
             ),
             Menu(

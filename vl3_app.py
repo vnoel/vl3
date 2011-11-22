@@ -63,7 +63,12 @@ class ImagePlotController(Handler):
 
         
     def new_view(self, ui_info):
-        image = ImagePlot(data_source=self.view.data_source)
+        
+        if self.view.data_source:
+            image = ImagePlot(data_source=self.view.data_source)
+        else:
+            image = ImagePlot()
+            
         controller = ImagePlotController(view=image)
         image.configure_traits(handler=controller)
 
