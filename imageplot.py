@@ -39,10 +39,33 @@ from profile import ProfilePlot, ProfileController
 basesirta_path = '/bdd/SIRTA/'
 
 major_version = 0
-minor_version = 5
+minor_version = 6
 
 # change factor for colormap caxis
 cmap_change_factor = 2.
+
+# this would be better in vl3_app.py
+menubar=MenuBar(
+    Menu(
+        CloseAction,
+        Separator(),
+        Action(name='&New window', action='new_empty_view', accelerator='Ctrl+N'),
+        Action(name='&Open data file...', action='open_file', accelerator='Ctrl+O'),
+        Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
+        '_',
+        Action(name='&Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
+        # Action(name='Quit', action='quit', accelerator='Ctrl+Q'),
+        name='&File',
+    ),
+    Menu(
+        Action(name='New view', action='new_view', enabled_when='plot_title != ""'),
+        name='View',
+    ),
+    Menu(
+        Action(name='About', action='about_dialog'),
+        name='Help'
+    ),
+)
 
 
 def add_date_axis(plot):
@@ -86,7 +109,7 @@ class ImagePlot(HasTraits):
             UItem('seldata', springy=True),
             visible_when='plot_title != ""'
         ),
-        UItem('container', width=800, height=300, editor=ComponentEditor()),
+        UItem('container', editor=ComponentEditor(), width=800, height=300),
         HGroup(
             UItem('show_profile'),
             UItem('reset_zoom'),
@@ -95,25 +118,7 @@ class ImagePlot(HasTraits):
             Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
             visible_when='plot_title != ""'
         ),
-        menubar=MenuBar(
-            Menu(
-                CloseAction,
-                Separator(),
-                Action(name='New window', action='new_empty_view', accelerator='Ctrl+N'),
-                Action(name='&Open data file...', action='open_file', accelerator='Ctrl+O'),
-                Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
-                Action(name='Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
-                name='File',
-            ),
-            Menu(
-                Action(name='New view', action='new_view', enabled_when='plot_title != ""'),
-                name='View',
-            ),
-            Menu(
-                Action(name='About', action='about_dialog'),
-                name='Help'
-            ),
-        ),
+        menubar=menubar,
         resizable=True,
         title=str(window_title),
         icon=icon_img
@@ -180,6 +185,7 @@ class ImagePlot(HasTraits):
         self.plot_title = self.make_plot_title()
         self.update_window_title()
         self.pcolor, self.container, self.colorbar = self.pcolor_create()
+        
                 
         
     def update_data_list(self, data_type):
