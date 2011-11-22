@@ -80,8 +80,8 @@ class LidarData(object):
 
             data = self._data_regrid_time()
                     
-            epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
-            self.epochtime_range = np.min(epochtime), np.max(epochtime)
+            self.epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
+            self.epochtime_range = np.min(self.epochtime), np.max(self.epochtime)
 
 
     def _data_regrid_time(self):

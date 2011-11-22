@@ -155,14 +155,6 @@ class Rhi(HasTraits):
         self.handler.open_dir(None)
         
         
-    def update_window_title(self):
-        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
-        
-
-    def make_plot_title(self):
-        return str(self.lidardata.date.date()) + ' : ' + self.seldata        
-        
-        
     def open_data(self, data_source):
         
         if data_source is None:
@@ -201,10 +193,23 @@ class Rhi(HasTraits):
         self.data_list = data_list
         
         
-    def set_plot_boundaries(self):
+    def update_titles(self):
+        if self.data_source is None:
+            return
+            
+        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
+        self.plot_title = str(self.lidardata.date.date()) + ' : ' + self.seldata
+        self.pcolor.title = self.plot_title
+        # colorbar titles
+        ctitle = self.seldata
+        if self.log_scale:
+            ctitle = ctitle + ' [Log10]'
+        self.colorbar._axis.title = ctitle
+
         
-        self.img.xbounds = self.lidardata.epochtime_range
-        self.img.ybounds = self.lidardata.alt_range
+    def set_plot_boundaries(self):
+        datasource = self.pcolor.range2d.sources[0]
+        datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
         
         
     def set_color_scale(self, data_to_show):
@@ -225,16 +230,10 @@ class Rhi(HasTraits):
     def pcolor_set_data(self, array_data):
         
         self.pcolor_data.set_data('image', array_data)
-        self.set_plot_boundaries()
         self.set_color_scale(array_data)
+        self.set_plot_boundaries()
         
-        self.plot_title=self.make_plot_title()
-        self.update_window_title()
-        self.pcolor.title = self.make_plot_title()
-        ctitle = self.seldata
-        if self.log_scale:
-            ctitle = ctitle + ' [Log10]'
-        self.colorbar._axis.title = ctitle
+        self.update_titles()
         
         
     def pcolor_create(self, pcolor_data):
@@ -243,7 +242,7 @@ class Rhi(HasTraits):
 
         # DON'T FORGET THE [0] to get a handle to the actual plot
         self.img = plot.img_plot('image', 
-                                colormap=chaco.jet, 
+                                colormap=chaco.jet, xbounds=(0,1.), ybounds=(0,1.),
                                 padding_left=40, 
                                 padding_right=30)[0]
         self.img.overlays.append(ZoomTool(self.img, tool_mode='box', drag_buttons='left', always_on=True))

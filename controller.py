@@ -21,7 +21,7 @@ class RhiController(Handler):
     view = Instance(Rhi)
 
     def init(self, info):
-        # reference to the imageplot object view
+        # reference to the rhi object view
         self.view = info.object
         self.view.handler = self
 
