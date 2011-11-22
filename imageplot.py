@@ -157,7 +157,7 @@ class ImagePlot(HasTraits):
 
         self.plot_title = self.make_plot_title()
         self.update_window_title()
-        self.pcolor, self.container = self.pcolor_create()
+        self.pcolor, self.container, self.colorbar = self.pcolor_create()
                 
         
     def update_data_list(self, data_type):
@@ -212,14 +212,16 @@ class ImagePlot(HasTraits):
                                     orientation='v',
                                     resizable='v',
                                     width=20,
-                                    padding=20)
-        colorbar.plot = img
-        colorbar.padding_top = plot.padding_top
-        colorbar.padding_bottom = plot.padding_bottom
+                                    padding=20,
+                                    padding_left=50,
+                                    plot=img,
+                                    padding_top=plot.padding_top,
+                                    padding_bottom=plot.padding_bottom)
+        colorbar._axis.title = self.seldata
         
-        container = chaco.HPlotContainer(plot, colorbar, use_backbuffer=True)
+        container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
         
-        return plot, container
+        return plot, container, colorbar
     
     
     def fix_color_scale(self, data_to_show):
@@ -262,8 +264,10 @@ class ImagePlot(HasTraits):
             data_to_show[idx_pos] = np.log10(data_to_show[idx_pos])
             data_to_show[idx_neg] = np.nan
         
+        # TODO: create a method for fixing data in the plot
         self.pcolor_data.set_data('image', data_to_show)
         self.pcolor.title = self.make_plot_title()
+        self.colorbar._axis.title = self.seldata
         
         self.fix_color_scale(data_to_show)
             
