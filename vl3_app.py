@@ -27,10 +27,10 @@ class ImagePlotController(Handler):
     
     view = Instance(ImagePlot)
 
-
     def init(self, info):
         # reference to the imageplot object view
         self.view = info.object
+        self.view.handler = self
 
 
     def open_source(self, source_type):

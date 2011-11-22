@@ -66,8 +66,21 @@ class ImagePlot(HasTraits):
     reset_zoom = Button('Reset Zoom')
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
+    
+    open_file_button = Button('Open File...')
+    open_folder_button = Button('Open Folder...')
 
     traits_view = View(
+        # this bit of the view is only visible when there's no data
+        # ie at startup
+        HGroup(
+            UItem('open_file_button', padding=15, springy=True),
+            UItem('open_folder_button', padding=15, springy=True),
+            springy=True,
+            visible_when='plot_title == ""'
+        ),
+        # this bit of the view shows when there is data
+        # ie after file/folder loading
         HGroup(
             UItem('data_type', visible_when='lidardata.has_ratio is True'),
             UItem('seldata', springy=True),
@@ -129,6 +142,14 @@ class ImagePlot(HasTraits):
             self.open_data(data_source)
                 
 
+    def _open_file_button_fired(self):
+        self.handler.open_file(None)
+        
+        
+    def _open_folder_button_fired(self):
+        self.handler.open_dir(None)
+        
+        
     def update_window_title(self):
         self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
         
@@ -201,22 +222,22 @@ class ImagePlot(HasTraits):
         plot.title=self.make_plot_title()
         self.update_window_title()
         
-        
         plot.underlays.remove(plot.x_axis)
         add_date_axis(plot)
         
+        # left padding must be at least 50 to accomodate changes in number label width
         colorbar = chaco.ColorBar(index_mapper=chaco.LinearMapper(range=img.color_mapper.range),
                                     color_mapper=img.color_mapper,
                                     orientation='v',
                                     resizable='v',
                                     width=20,
                                     padding=20,
-                                    padding_left=40,
+                                    padding_left=50,
                                     plot=img,
                                     padding_top=plot.padding_top,
                                     padding_bottom=plot.padding_bottom)
         colorbar._axis.title = self.seldata
-        
+
         container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
         
         return plot, container, colorbar
