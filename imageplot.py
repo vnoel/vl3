@@ -106,7 +106,7 @@ class ImagePlot(HasTraits):
                 name='File',
             ),
             Menu(
-                Action(name='New view', action='new_view'),
+                Action(name='New view', action='new_view', enabled_when='plot_title != ""'),
                 name='View',
             ),
             Menu(
