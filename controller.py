@@ -16,7 +16,7 @@ from rhi import Rhi
 from config import minor_version, major_version
 
 
-class ImagePlotController(Handler):
+class RhiController(Handler):
     
     view = Instance(Rhi)
 
@@ -55,8 +55,9 @@ class ImagePlotController(Handler):
             
         
     def new_empty_view(self, ui_info):
+        
         rhi = Rhi()
-        controller = ImagePlotController(view=rhi)
+        controller = RhiController(view=rhi)
         rhi.configure_traits(handler=controller)
 
         
@@ -65,9 +66,10 @@ class ImagePlotController(Handler):
         if self.view.data_source:
             rhi = Rhi(data_source=self.view.data_source)
         else:
+            # this should not happen...
             rhi = Rhi()
             
-        controller = ImagePlotController(view=rhi)
+        controller = RhiController(view=rhi)
         rhi.configure_traits(handler=controller)
 
     

@@ -27,7 +27,7 @@ from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
 from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
-from traitsui.api import Item, UItem, View, HGroup
+from traitsui.api import Item, UItem, View, HGroup, VGroup
 from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
@@ -37,13 +37,11 @@ from lidardata import LidarData, InvalidFormat
 from profile import ProfilePlot, ProfileController
 
 from config import minor_version, major_version
-
-basesirta_path = '/bdd/SIRTA/'
+from config import basesirta_path
 
 # change factor for colormap caxis
 cmap_change_factor = 2.
 
-# this would be better in vl3_app.py
 menubar=MenuBar(
     Menu(
         CloseAction,
@@ -75,6 +73,8 @@ def add_date_axis(plot):
 class Rhi(HasTraits):
     
     data_list = List([])
+    data_source = None
+    profileplot = None
     plot_title = Str('')
     window_title = Str('View Lidar 3 v%d.%d' % (major_version, minor_version))
     
@@ -103,18 +103,19 @@ class Rhi(HasTraits):
         ),
         # this bit of the view shows when there is data
         # ie after file/folder loading
-        HGroup(
-            UItem('data_type', visible_when='lidardata.has_ratio is True'),
-            UItem('seldata', springy=True),
-            visible_when='plot_title != ""'
-        ),
-        UItem('container', editor=ComponentEditor(), width=800, height=300),
-        HGroup(
-            UItem('show_profile'),
-            UItem('reset_zoom'),
-            UItem('scale_less'),
-            UItem('scale_more'),
-            Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
+        VGroup(
+            HGroup(
+                UItem('data_type', visible_when='lidardata.has_ratio is True'),
+                UItem('seldata', springy=True),
+            ),
+            UItem('container', editor=ComponentEditor(), width=800, height=300),
+            HGroup(
+                UItem('show_profile'),
+                UItem('reset_zoom'),
+                UItem('scale_less'),
+                UItem('scale_more'),
+                Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
+            ),
             visible_when='plot_title != ""'
         ),
         menubar=menubar,
@@ -125,10 +126,10 @@ class Rhi(HasTraits):
     
     
     def __init__(self, data_source=None, base_folder=basesirta_path):
-        
-        self.pcolor = None
-        self.pcolor_data = None
-        self.profileplot = None
+                
+        self.pcolor_data = chaco.ArrayPlotData()
+        self.pcolor_data.set_data('image', np.zeros([1,1]))
+        self.pcolor, self.container, self.colorbar = self.pcolor_create(self.pcolor_data)
 
         self.save_image_file = os.getcwd()
 
@@ -181,9 +182,7 @@ class Rhi(HasTraits):
         self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
 
-        self.plot_title = self.make_plot_title()
-        self.update_window_title()
-        self.pcolor, self.container, self.colorbar = self.pcolor_create()
+        self.pcolor_set_data(self.lidardata.data[self.seldata].T)
         
                 
         
@@ -202,57 +201,15 @@ class Rhi(HasTraits):
         self.data_list = data_list
         
         
-    def pcolor_create(self):
+    def set_plot_boundaries(self):
+        self.img.xbounds = self.lidardata.epochtime_range
+        self.img.ybounds = self.lidardata.alt_range
         
-        data = chaco.ArrayPlotData()
+        
+    def set_color_scale(self, data_to_show):
 
-        data.set_data('image', self.lidardata.data[self.seldata].T)
-        print np.shape(self.lidardata.data[self.seldata])
-        print self.seldata
-        self.pcolor_data = data
-        
-        self.cmin = np.nanmin(self.lidardata.data[self.seldata])
-        self.cmax = np.nanmax(self.lidardata.data[self.seldata])
-        
-        plot = chaco.Plot(data, padding=40)
-
-        # DON'T FORGET THE [0] to get a handle to the actual plot
-        img = plot.img_plot('image', name=self.plot_title, colormap=chaco.jet,
-                            xbounds=self.lidardata.epochtime_range,
-                            ybounds=self.lidardata.alt_range, padding_left=40, padding_right=30)[0]
-        img.overlays.append(ZoomTool(img, tool_mode='box', drag_buttons='left', always_on=True))
-        self.img = img
-        self.fix_color_scale(self.lidardata.data[self.seldata])
-
-        plot.y_axis.title='Range [km]'
-        plot.title=self.make_plot_title()
-        self.update_window_title()
-        
-        plot.underlays.remove(plot.x_axis)
-        add_date_axis(plot)
-        
-        # left padding must be at least 50 to accomodate changes in number label width
-        colorbar = chaco.ColorBar(index_mapper=chaco.LinearMapper(range=img.color_mapper.range),
-                                    color_mapper=img.color_mapper,
-                                    plot=img,
-                                    orientation='v',
-                                    resizable='v',
-                                    width=20,
-                                    padding=20,
-                                    padding_left='auto',
-                                    padding_top=plot.padding_top,
-                                    padding_bottom=plot.padding_bottom)
-        colorbar._axis.title = self.seldata
-
-        container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
-        
-        return plot, container, colorbar
-    
-    
-    def fix_color_scale(self, data_to_show):
-
-        min = np.ma.min(np.ma.masked_invalid(data_to_show))
-        max = np.ma.max(np.ma.masked_invalid(data_to_show))
+        min = np.nanmin(data_to_show)
+        max = np.nanmax(data_to_show)
         range = max-min
 
         if not self.log_scale:
@@ -263,6 +220,51 @@ class Rhi(HasTraits):
         self.img.color_mapper.range.set_bounds(datarange[0], datarange[1])            
         self.cmin, self.cmax = self.img.color_mapper.range.low, self.img.color_mapper.range.high
 
+
+    def pcolor_set_data(self, array_data):
+        
+        self.pcolor_data.set_data('image', array_data)
+        self.set_plot_boundaries()
+        self.set_color_scale(array_data)
+        
+        self.plot_title=self.make_plot_title()
+        self.update_window_title()
+        self.pcolor.title = self.make_plot_title()
+        self.colorbar._axis.title = self.seldata
+        
+        
+    def pcolor_create(self, pcolor_data):
+                        
+        plot = chaco.Plot(self.pcolor_data, padding=40)
+
+        # DON'T FORGET THE [0] to get a handle to the actual plot
+        self.img = plot.img_plot('image', 
+                                # name=self.plot_title, 
+                                colormap=chaco.jet, 
+                                padding_left=40, 
+                                padding_right=30)[0]
+        self.img.overlays.append(ZoomTool(self.img, tool_mode='box', drag_buttons='left', always_on=True))
+
+        plot.y_axis.title='Range [km]'
+        plot.underlays.remove(plot.x_axis)
+        add_date_axis(plot)
+        
+        # left padding must be at least 50 to accomodate changes in number label width
+        colorbar = chaco.ColorBar(index_mapper=chaco.LinearMapper(range=self.img.color_mapper.range),
+                                    color_mapper=self.img.color_mapper,
+                                    plot=self.img,
+                                    orientation='v',
+                                    resizable='v',
+                                    width=20,
+                                    padding=20,
+                                    padding_left=50,
+                                    padding_top=plot.padding_top,
+                                    padding_bottom=plot.padding_bottom)
+
+        container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
+        
+        return plot, container, colorbar
+    
     
     def _data_type_changed(self):
         
@@ -288,13 +290,15 @@ class Rhi(HasTraits):
             idx_neg = data_to_show <= 0
             data_to_show[idx_pos] = np.log10(data_to_show[idx_pos])
             data_to_show[idx_neg] = np.nan
+            
+        self.pcolor_set_data(data_to_show)
         
-        # TODO: create a method for fixing data in the plot
-        self.pcolor_data.set_data('image', data_to_show)
-        self.pcolor.title = self.make_plot_title()
-        self.colorbar._axis.title = self.seldata
-        
-        self.fix_color_scale(data_to_show)
+        # # TODO: create a method for fixing data in the plot
+        # self.pcolor_data.set_data('image', data_to_show)
+        # self.pcolor.title = self.make_plot_title()
+        # self.colorbar._axis.title = self.seldata
+        # 
+        # self.fix_color_scale(data_to_show)
             
     def _profile_data(self, iprof):
         profile_data = self.lidardata.data[self.seldata][iprof,:].copy()

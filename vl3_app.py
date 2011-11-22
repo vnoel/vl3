@@ -15,7 +15,7 @@ Takes care of creating menus and stuff.
 import sys
 
 from rhi import Rhi
-from controller import ImagePlotController
+from controller import RhiController
 
 from util import print_supported_formats
 from config import major_version, minor_version
@@ -32,5 +32,5 @@ if __name__ == '__main__':
     print_supported_formats()
     
     rhi = Rhi(yagfile)
-    controller = ImagePlotController(view=rhi)
+    controller = RhiController(view=rhi)
     rhi.configure_traits(handler=controller)

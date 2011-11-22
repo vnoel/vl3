@@ -8,6 +8,7 @@ Created by Vincent Noel - LMD/CNRS on 2011-11-22.
 
 major_version = 0
 minor_version = 6
+basesirta_path = '/bdd/SIRTA/'
 
 
 def main():
