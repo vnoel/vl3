@@ -192,7 +192,7 @@ class ImagePlot(HasTraits):
         # DON'T FORGET THE [0] to get a handle to the actual plot
         img = plot.img_plot('image', name=self.plot_title, colormap=chaco.jet,
                             xbounds=self.lidardata.epochtime_range,
-                            ybounds=self.lidardata.alt_range)[0]
+                            ybounds=self.lidardata.alt_range, padding_left=40, padding_right=30)[0]
         img.overlays.append(ZoomTool(img, tool_mode='box', drag_buttons='left', always_on=True))
         self.img = img
         self.fix_color_scale(self.lidardata.data[self.seldata])
@@ -203,8 +203,6 @@ class ImagePlot(HasTraits):
         
         
         plot.underlays.remove(plot.x_axis)
-        plot.padding_left = 50
-        plot.padding_right = 20
         add_date_axis(plot)
         
         colorbar = chaco.ColorBar(index_mapper=chaco.LinearMapper(range=img.color_mapper.range),
@@ -213,7 +211,7 @@ class ImagePlot(HasTraits):
                                     resizable='v',
                                     width=20,
                                     padding=20,
-                                    padding_left=50,
+                                    padding_left=40,
                                     plot=img,
                                     padding_top=plot.padding_top,
                                     padding_bottom=plot.padding_bottom)
