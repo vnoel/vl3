@@ -208,6 +208,10 @@ class Rhi(HasTraits):
 
         
     def set_plot_boundaries(self):
+
+        # this method to set the axis range of an img_plot after its creation comes from
+        # http://markmail.org/message/r5m2dmkff3kvotek#query:+page:1+mid:zf6u7xtntjvsdpnq+state:results
+        
         datasource = self.pcolor.range2d.sources[0]
         datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
         
@@ -354,8 +358,9 @@ class Rhi(HasTraits):
         if self.img.index.metadata.has_key('selections'):
             if self.profileplot is not None:
                 iprof = self.img.index.metadata['selections'][0]
-                profile_data = self._profile_data(iprof)
-                self.profileplot.set_profile(profile_data, self.lidardata.alt, self.lidardata.datetime[iprof])
+                if iprof is not None:
+                    profile_data = self._profile_data(iprof)
+                    self.profileplot.set_profile(profile_data, self.lidardata.alt, self.lidardata.datetime[iprof])
     
     
     def _log_scale_changed(self):
