@@ -99,7 +99,7 @@ class ImagePlot(HasTraits):
             Menu(
                 CloseAction,
                 Separator(),
-                Action(name='New window', action='new_empty_view'),
+                Action(name='New window', action='new_empty_view', accelerator='Ctrl+N'),
                 Action(name='&Open data file...', action='open_file', accelerator='Ctrl+O'),
                 Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
                 Action(name='Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
@@ -170,6 +170,7 @@ class ImagePlot(HasTraits):
             msg.open()
             return
             
+        self.data_source = data_source
         self.lidardata = lidardata
                 
         self.data_type = 'Signal'
