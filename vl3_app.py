@@ -14,21 +14,12 @@ Takes care of creating menus and stuff.
 
 import sys
 
-from imageplot import ImagePlot
-from imageplot import minor_version, major_version
+from rhi import Rhi
 from controller import ImagePlotController
 
-from util import read_supported_formats
+from util import print_supported_formats
+from config import major_version, minor_version
 
-
-def print_supported_formats():
-    
-    supported_formats = read_supported_formats()
-    print 'Supported data formats :'
-    for key in supported_formats:
-        print '\t'+key
-    print '\tlna_0a'
-    
     
 if __name__ == '__main__':
     
@@ -40,6 +31,6 @@ if __name__ == '__main__':
     print 'vl3 - v.%d.%d' % (major_version, minor_version)
     print_supported_formats()
     
-    imageapp = ImagePlot(yagfile)
-    controller = ImagePlotController(view=imageapp)
-    imageapp.configure_traits(handler=controller)
+    rhi = Rhi(yagfile)
+    controller = ImagePlotController(view=rhi)
+    rhi.configure_traits(handler=controller)

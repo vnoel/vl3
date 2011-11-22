@@ -77,6 +77,15 @@ def read_supported_formats():
     supported_formats = lidar_variables.keys()
     return supported_formats
     
+
+def print_supported_formats():
+
+    supported_formats = read_supported_formats()
+    print 'Supported data formats :'
+    for key in supported_formats:
+        print '\t'+key
+    print '\tlna_0a'
+
     
 def read_formats():
     lidar_variables = _read_variable_in_formats('lidar_variables')

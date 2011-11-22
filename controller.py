@@ -12,12 +12,13 @@ from pyface.api import FileDialog, DirectoryDialog, AboutDialog, OK, ImageResour
 from traits.api import Instance
 from traitsui.api import Handler
 
-from imageplot import ImagePlot, minor_version, major_version
+from rhi import Rhi
+from config import minor_version, major_version
 
 
 class ImagePlotController(Handler):
     
-    view = Instance(ImagePlot)
+    view = Instance(Rhi)
 
     def init(self, info):
         # reference to the imageplot object view
@@ -54,20 +55,20 @@ class ImagePlotController(Handler):
             
         
     def new_empty_view(self, ui_info):
-        image = ImagePlot()
-        controller = ImagePlotController(view=image)
-        image.configure_traits(handler=controller)
+        rhi = Rhi()
+        controller = ImagePlotController(view=rhi)
+        rhi.configure_traits(handler=controller)
 
         
     def new_view(self, ui_info):
         
         if self.view.data_source:
-            image = ImagePlot(data_source=self.view.data_source)
+            rhi = Rhi(data_source=self.view.data_source)
         else:
-            image = ImagePlot()
+            rhi = Rhi()
             
-        controller = ImagePlotController(view=image)
-        image.configure_traits(handler=controller)
+        controller = ImagePlotController(view=rhi)
+        rhi.configure_traits(handler=controller)
 
     
     def about_dialog(self, ui_info):

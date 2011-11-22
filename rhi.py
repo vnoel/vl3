@@ -36,10 +36,9 @@ from pyface.api import MessageDialog, ImageResource
 from lidardata import LidarData, InvalidFormat
 from profile import ProfilePlot, ProfileController
 
-basesirta_path = '/bdd/SIRTA/'
+from config import minor_version, major_version
 
-major_version = 0
-minor_version = 6
+basesirta_path = '/bdd/SIRTA/'
 
 # change factor for colormap caxis
 cmap_change_factor = 2.
@@ -73,7 +72,7 @@ def add_date_axis(plot):
     plot.underlays.append(bottom_axis)
 
 
-class ImagePlot(HasTraits):
+class Rhi(HasTraits):
     
     data_list = List([])
     plot_title = Str('')
@@ -235,12 +234,12 @@ class ImagePlot(HasTraits):
         # left padding must be at least 50 to accomodate changes in number label width
         colorbar = chaco.ColorBar(index_mapper=chaco.LinearMapper(range=img.color_mapper.range),
                                     color_mapper=img.color_mapper,
+                                    plot=img,
                                     orientation='v',
                                     resizable='v',
                                     width=20,
                                     padding=20,
-                                    padding_left=50,
-                                    plot=img,
+                                    padding_left='auto',
                                     padding_top=plot.padding_top,
                                     padding_bottom=plot.padding_bottom)
         colorbar._axis.title = self.seldata
@@ -376,6 +375,6 @@ if __name__ == '__main__':
         sys.exit('Usage: imageplot.py data_source')
         
     data_source = sys.argv[1]
-    imageplot = ImagePlot(data_source=data_source)
-    imageplot.configure_traits()
+    rhi = Rhi(data_source=data_source)
+    rhi.configure_traits()
     
