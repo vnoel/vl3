@@ -202,6 +202,7 @@ class Rhi(HasTraits):
         
         
     def set_plot_boundaries(self):
+        
         self.img.xbounds = self.lidardata.epochtime_range
         self.img.ybounds = self.lidardata.alt_range
         
@@ -230,7 +231,10 @@ class Rhi(HasTraits):
         self.plot_title=self.make_plot_title()
         self.update_window_title()
         self.pcolor.title = self.make_plot_title()
-        self.colorbar._axis.title = self.seldata
+        ctitle = self.seldata
+        if self.log_scale:
+            ctitle = ctitle + ' [Log10]'
+        self.colorbar._axis.title = ctitle
         
         
     def pcolor_create(self, pcolor_data):
@@ -239,7 +243,6 @@ class Rhi(HasTraits):
 
         # DON'T FORGET THE [0] to get a handle to the actual plot
         self.img = plot.img_plot('image', 
-                                # name=self.plot_title, 
                                 colormap=chaco.jet, 
                                 padding_left=40, 
                                 padding_right=30)[0]
@@ -293,13 +296,7 @@ class Rhi(HasTraits):
             
         self.pcolor_set_data(data_to_show)
         
-        # # TODO: create a method for fixing data in the plot
-        # self.pcolor_data.set_data('image', data_to_show)
-        # self.pcolor.title = self.make_plot_title()
-        # self.colorbar._axis.title = self.seldata
-        # 
-        # self.fix_color_scale(data_to_show)
-            
+        
     def _profile_data(self, iprof):
         profile_data = self.lidardata.data[self.seldata][iprof,:].copy()
         if self.log_scale:
