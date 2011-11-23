@@ -223,17 +223,6 @@ class Rhi(HasTraits):
         datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
         
         
-    def cbar_zoomed(self):
-        
-        cmin = self.img.color_mapper.range.low
-        cmax = self.img.color_mapper.range.high
-        print 'paf'
-        if self.cmin == cmin and self.cmax == cmax:
-            return False
-        else:
-            return True
-        
-        
     def set_color_scale(self, data_to_show):
 
         min = np.nanmin(data_to_show)
