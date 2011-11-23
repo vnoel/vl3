@@ -21,7 +21,7 @@ import sys
 import os
 import numpy as np
 import chaco.api as chaco
-from chaco.tools.api import LineInspector, ZoomTool
+from chaco.tools.api import LineInspector, ZoomTool, PanTool
 # from chaco.tools.api import RangeSelection, RangeSelectionOverlay
 
 # the regular ZoomTool does not work in colorbars
@@ -121,7 +121,7 @@ class Rhi(HasTraits):
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
-                UItem('reset_scale', tooltip='Reset zoomed colorbar'),
+                UItem('reset_scale', tooltip='On colorbar : left-click zooms, right-click drags'),
                 Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
                 Spring(),
                 UItem('reset_zoom'),
@@ -245,6 +245,8 @@ class Rhi(HasTraits):
             datarange = [min + range*0.25, max]
 
         self.img.color_mapper.range.set_bounds(datarange[0], datarange[1])            
+        self.colorbar.index_mapper.domain_limits = (datarange[0], datarange[1])
+        
         self.cmin, self.cmax = self.img.color_mapper.range.low, self.img.color_mapper.range.high
 
 
@@ -275,6 +277,7 @@ class Rhi(HasTraits):
                                 padding_left=40, 
                                 padding_right=30)[0]
         self.img.overlays.append(ZoomTool(self.img, tool_mode='box', drag_buttons='left', always_on=True))
+        self.img.tools.append(PanTool(self.img, always_on=True, drag_button='right'))
 
         plot.y_axis.title='Range [km]'
         plot.underlays.remove(plot.x_axis)
@@ -300,11 +303,13 @@ class Rhi(HasTraits):
         # colorbar.overlays.append(RangeSelectionOverlay(colorbar, border_color='white', alpha=0.8, fill_color='white'))
         # range_selection.listeners.append(self.img)
         
+        colorbar.tools.append(PanTool(colorbar, constrain_direction='y', constrain=True, drag_button='right'))
+
         # make the colorbar zoomable
         # cannot use ZoomTool, as it tries to access the x_mapper and y_mapper of the zoomed component (here colorbar)
         # and colorbar only has y_mapper (x_mapper is None), which leads to an exception in _map_coordinate_box        
         
-        zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
+        zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left', max_zoom_out_factor=1.)
         colorbar.overlays.append(zoom_overlay)
 
         container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
