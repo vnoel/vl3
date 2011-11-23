@@ -108,7 +108,7 @@ class Rhi(HasTraits):
                 UItem('data_type', visible_when='lidardata.has_ratio is True'),
                 UItem('seldata', springy=True),
             ),
-            UItem('container', editor=ComponentEditor(), width=800, height=300),
+            UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
                 UItem('show_profile'),
                 UItem('reset_zoom'),
@@ -266,6 +266,10 @@ class Rhi(HasTraits):
                                     padding_left=50,
                                     padding_top=plot.padding_top,
                                     padding_bottom=plot.padding_bottom)
+        
+        # make the colorbar zoomable
+        zoom_overlay = ZoomTool(colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
+        colorbar.overlays.append(zoom_overlay)
 
         container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
         

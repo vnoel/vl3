@@ -31,6 +31,8 @@ if __name__ == '__main__':
     print 'vl3 - v.%d.%d' % (major_version, minor_version)
     print_supported_formats()
     
+    yagfile = '/Users/vnoel/Code/vl3/test_data/netcdf/lna_1a_PR2_v02_20040319_100000_60.nc'
+    
     rhi = Rhi(yagfile)
     controller = RhiController(view=rhi)
     rhi.configure_traits(handler=controller)
