@@ -22,12 +22,14 @@ import os
 import numpy as np
 import chaco.api as chaco
 from chaco.tools.api import LineInspector, ZoomTool
+# the regular ZoomTool does not work in colorbars
+from chaco.tools.simple_zoom import SimpleZoom as CZoomTool
 
 from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
 from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
-from traitsui.api import Item, UItem, View, HGroup, VGroup
+from traitsui.api import Item, UItem, View, HGroup, VGroup, Spring
 from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
@@ -85,7 +87,8 @@ class Rhi(HasTraits):
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
     log_scale = Bool
-    reset_zoom = Button('Reset Zoom')
+    reset_zoom = Button('Reset plot zoom')
+    reset_scale = Button('Reset colorbar zoom')
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
     
@@ -109,14 +112,16 @@ class Rhi(HasTraits):
             HGroup(
                 UItem('data_type', visible_when='lidardata.has_ratio is True'),
                 UItem('seldata', springy=True),
+                UItem('show_profile'),
+                padding=5
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
-                UItem('show_profile'),
-                UItem('reset_zoom'),
-                UItem('scale_less'),
-                UItem('scale_more'),
+                UItem('reset_scale', tooltip='Reset zoomed colorbar'),
                 Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
+                Spring(),
+                UItem('reset_zoom'),
+                padding=5
             ),
             visible_when='plot_title != ""'
         ),
@@ -218,6 +223,17 @@ class Rhi(HasTraits):
         datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
         
         
+    def cbar_zoomed(self):
+        
+        cmin = self.img.color_mapper.range.low
+        cmax = self.img.color_mapper.range.high
+        print 'paf'
+        if self.cmin == cmin and self.cmax == cmax:
+            return False
+        else:
+            return True
+        
+        
     def set_color_scale(self, data_to_show):
 
         min = np.nanmin(data_to_show)
@@ -253,6 +269,7 @@ class Rhi(HasTraits):
                                 padding_right=30)[0]
         self.img.overlays.append(ZoomTool(self.img, tool_mode='box', drag_buttons='left', always_on=True))
 
+
         plot.y_axis.title='Range [km]'
         plot.underlays.remove(plot.x_axis)
         add_date_axis(plot)
@@ -270,7 +287,9 @@ class Rhi(HasTraits):
                                     padding_bottom=plot.padding_bottom)
         
         # make the colorbar zoomable
-        zoom_overlay = ZoomTool(colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
+        # cannot use ZoomTool, as it tries to access the x_mapper and y_mapper of the zoomed component (here colorbar)
+        # and colorbar only has y_mapper (x_mapper is None), which leads to an exception in _map_coordinate_box
+        zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
         colorbar.overlays.append(zoom_overlay)
 
         container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
@@ -329,6 +348,11 @@ class Rhi(HasTraits):
                                         write_metadata=True, is_listener=False, is_interactive=True, color='white'))
             self.img.index.on_trait_change(self._metadata_changed, 'metadata_changed')
             self.profileplot.configure_traits(handler=self.profilecontroller)
+        
+        
+    def _reset_scale_fired(self):
+        
+        self.img.color_mapper.range.set_bounds(self.cmin, self.cmax)            
         
         
     def _reset_zoom_fired(self):
