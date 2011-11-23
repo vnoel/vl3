@@ -95,9 +95,11 @@ class Rhi(HasTraits):
     traits_view = View(
         # this bit of the view is only visible when there's no data
         # ie at startup and empty views
-        HGroup(
+        VGroup(
+            HGroup(
             UItem('open_file_button', padding=15, springy=True),
             UItem('open_folder_button', padding=15, springy=True),
+            ),
             springy=True,
             visible_when='plot_title == ""'
         ),
