@@ -124,7 +124,7 @@ class Rhi(HasTraits):
                 UItem('reset_scale', tooltip='On colorbar : left-click zooms, right-click drags'),
                 Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
                 Spring(),
-                UItem('reset_zoom'),
+                UItem('reset_zoom', tooltip='On main plot : left-click zooms, right-click drags'),
                 padding=5
             ),
             visible_when='plot_title != ""'
@@ -228,6 +228,9 @@ class Rhi(HasTraits):
         
         datasource = self.pcolor.range2d.sources[0]
         datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
+        
+        self.img.x_mapper.domain_limits = (self.lidardata.epochtime[0], self.lidardata.epochtime[-1])
+        self.img.y_mapper.domain_limits = (self.lidardata.alt[0], self.lidardata.alt[-1])
 
 
     def set_color_scale(self, data_to_show):
@@ -244,7 +247,7 @@ class Rhi(HasTraits):
         else:
             datarange = [min + range*0.25, max]
 
-        self.img.color_mapper.range.set_bounds(datarange[0], datarange[1])            
+        self.img.color_mapper.range.set_bounds(datarange[0], datarange[1])
         self.colorbar.index_mapper.domain_limits = (datarange[0], datarange[1])
         
         self.cmin, self.cmax = self.img.color_mapper.range.low, self.img.color_mapper.range.high
@@ -309,7 +312,7 @@ class Rhi(HasTraits):
         # cannot use ZoomTool, as it tries to access the x_mapper and y_mapper of the zoomed component (here colorbar)
         # and colorbar only has y_mapper (x_mapper is None), which leads to an exception in _map_coordinate_box        
         
-        zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left', max_zoom_out_factor=1.)
+        zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
         colorbar.overlays.append(zoom_overlay)
 
         container = chaco.HPlotContainer(colorbar, plot, use_backbuffer=True)
