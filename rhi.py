@@ -318,7 +318,7 @@ class Rhi(HasTraits):
             self.profileplot = ProfilePlot(self, profiledata=profile_data, alt=self.lidardata.alt, profname=0)
             self.profilecontroller = ProfileController(view=self.profileplot)
 
-            # Add line inspector  
+            # Add line inspector
             self.line_inspector = self.img.overlays.append(LineInspector(self.img, axis='index_x', inspect_mode='indexed',
                                         write_metadata=True, is_listener=False, is_interactive=True, color='white'))
             self.img.index.on_trait_change(self._metadata_changed, 'metadata_changed')
