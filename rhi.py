@@ -22,6 +22,8 @@ import os
 import numpy as np
 import chaco.api as chaco
 from chaco.tools.api import LineInspector, ZoomTool
+# from chaco.tools.api import RangeSelection, RangeSelectionOverlay
+
 # the regular ZoomTool does not work in colorbars
 from chaco.tools.simple_zoom import SimpleZoom as CZoomTool
 
@@ -44,7 +46,7 @@ from config import basesirta_path
 # change factor for colormap caxis
 cmap_change_factor = 2.
 
-menubar=MenuBar(
+menubar = MenuBar(
     Menu(
         CloseAction,
         Separator(),
@@ -68,6 +70,7 @@ menubar=MenuBar(
 
 
 def add_date_axis(plot):
+    
     bottom_axis = chaco.PlotAxis(plot, orientation='bottom', tick_generator=ScalesTickGenerator(scale=CalendarScaleSystem()))
     plot.underlays.append(bottom_axis)
 
@@ -87,6 +90,7 @@ class Rhi(HasTraits):
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
     log_scale = Bool
+    
     reset_zoom = Button('Reset plot zoom')
     reset_scale = Button('Reset colorbar zoom')
     scale_more = Button('Scale++')
@@ -168,22 +172,20 @@ class Rhi(HasTraits):
             return
             
         try:
-            lidardata = LidarData(from_source=data_source)
+            self.lidardata = LidarData(from_source=data_source)
         except InvalidFormat as inst:
             msg = MessageDialog(message=inst.args[0], severity='warning', title='Problem')
             msg.open()
             return
             
         self.data_source = data_source
-        self.lidardata = lidardata
                 
         self.data_type = 'Signal'
         self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
 
         self.pcolor_set_data(self.lidardata.data[self.seldata].T)
-        
-                
+
         
     def update_data_list(self, data_type):
         
@@ -201,33 +203,41 @@ class Rhi(HasTraits):
         
         
     def update_titles(self):
+        '''
+        Update all the titles - window, plot, colorbar
+        '''
+        
         if self.data_source is None:
             return
             
-        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
         self.plot_title = str(self.lidardata.date.date()) + ' : ' + self.seldata
+        
         self.pcolor.title = self.plot_title
-        # colorbar titles
-        ctitle = self.seldata
-        if self.log_scale:
-            ctitle = ctitle + ' [Log10]'
-        self.colorbar._axis.title = ctitle
+        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + self.plot_title
+        
+        # colorbar title
+        self.colorbar._axis.title = self.seldata+' [Log10]' if self.log_scale else self.seldata
 
         
     def set_plot_boundaries(self):
-
-        # this method to set the axis range of an img_plot after its creation comes from
-        # http://markmail.org/message/r5m2dmkff3kvotek#query:+page:1+mid:zf6u7xtntjvsdpnq+state:results
+        '''
+        sets the range for the vertical and horizontal axis
+        this method to set the axis range of an img_plot after its creation comes from
+        http://markmail.org/message/r5m2dmkff3kvotek#query:+page:1+mid:zf6u7xtntjvsdpnq+state:results
+        '''
         
         datasource = self.pcolor.range2d.sources[0]
         datasource.set_data(self.lidardata.epochtime, self.lidardata.alt)
-        
-        
+
+
     def set_color_scale(self, data_to_show):
+        '''
+        sets the range for the plot color scale, using the min and max value of the displayed data array.
+        '''
 
         min = np.nanmin(data_to_show)
         max = np.nanmax(data_to_show)
-        range = max-min
+        range = max - min
 
         if not self.log_scale:
             datarange = [min, max - range*0.25]
@@ -239,6 +249,11 @@ class Rhi(HasTraits):
 
 
     def pcolor_set_data(self, array_data):
+        '''
+        sets the data displayed in the plot.
+        fixes the color scale and plot ranges accordingly.
+        updates the plot title accordingly.
+        '''
         
         self.pcolor_data.set_data('image', array_data)
         self.set_color_scale(array_data)
@@ -248,6 +263,9 @@ class Rhi(HasTraits):
         
         
     def pcolor_create(self, pcolor_data):
+        '''
+        Creates the plot object and fills it with initial data
+        '''
                         
         plot = chaco.Plot(self.pcolor_data, padding=40)
 
@@ -257,7 +275,6 @@ class Rhi(HasTraits):
                                 padding_left=40, 
                                 padding_right=30)[0]
         self.img.overlays.append(ZoomTool(self.img, tool_mode='box', drag_buttons='left', always_on=True))
-
 
         plot.y_axis.title='Range [km]'
         plot.underlays.remove(plot.x_axis)
@@ -275,9 +292,18 @@ class Rhi(HasTraits):
                                     padding_top=plot.padding_top,
                                     padding_bottom=plot.padding_bottom)
         
+        # range selection in the colorbar
+        # not extremely useful
+
+        # range_selection = RangeSelection(component=colorbar)
+        # colorbar.tools.append(range_selection)
+        # colorbar.overlays.append(RangeSelectionOverlay(colorbar, border_color='white', alpha=0.8, fill_color='white'))
+        # range_selection.listeners.append(self.img)
+        
         # make the colorbar zoomable
         # cannot use ZoomTool, as it tries to access the x_mapper and y_mapper of the zoomed component (here colorbar)
-        # and colorbar only has y_mapper (x_mapper is None), which leads to an exception in _map_coordinate_box
+        # and colorbar only has y_mapper (x_mapper is None), which leads to an exception in _map_coordinate_box        
+        
         zoom_overlay = CZoomTool(component=colorbar, axis='index', tool_mode='range', always_on=True, drag_button='left')
         colorbar.overlays.append(zoom_overlay)
 
@@ -339,6 +365,15 @@ class Rhi(HasTraits):
             self.profileplot.configure_traits(handler=self.profilecontroller)
         
         
+    def _metadata_changed(self, old, new):
+        if self.img.index.metadata.has_key('selections'):
+            if self.profileplot is not None:
+                iprof = self.img.index.metadata['selections'][0]
+                if iprof is not None:
+                    profile_data = self._profile_data(iprof)
+                    self.profileplot.set_profile(profile_data, self.lidardata.alt, str(self.lidardata.datetime[iprof]))
+
+
     def _reset_scale_fired(self):
         
         self.img.color_mapper.range.set_bounds(self.cmin, self.cmax)            
@@ -371,16 +406,7 @@ class Rhi(HasTraits):
         self.img.request_redraw()
         if self.profileplot is not None:
             self.profileplot.profileplot.request_redraw()
-    
-    
-    def _metadata_changed(self, old, new):
-        if self.img.index.metadata.has_key('selections'):
-            if self.profileplot is not None:
-                iprof = self.img.index.metadata['selections'][0]
-                if iprof is not None:
-                    profile_data = self._profile_data(iprof)
-                    self.profileplot.set_profile(profile_data, self.lidardata.alt, self.lidardata.datetime[iprof])
-    
+        
     
     def _log_scale_changed(self):
         self._seldata_changed()

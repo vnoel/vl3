@@ -77,11 +77,14 @@ class LidarData(object):
             self.data_source = from_source
             self.has_ratio = data['has_ratio']
             self.alt_range = (np.min(self.alt), np.max(self.alt))
-
+            
             data = self._data_regrid_time()
                     
             self.epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
             self.epochtime_range = np.min(self.epochtime), np.max(self.epochtime)
+            
+            for dataname in self.data:
+                assert self.data[dataname].shape[0] == np.shape(self.datetime)[0]
 
 
     def _data_regrid_time(self):
@@ -117,10 +120,9 @@ class LidarData(object):
                     newk[i, :] = data[k][iprof, :]
             newdata[k] = newk
 
-        self.time = newtime
+        self.datetime = newtime
         self.data = newdata
-
-
+        
 
 def datafile_format(datafile):
     basefile = os.path.basename(datafile)

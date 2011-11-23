@@ -44,7 +44,7 @@ class ProfilePlot(HasTraits):
         if profiledata is not None and alt is not None and profname is not None:
             self.set_profile(profiledata, alt, profname)
             
-    def set_profile(self, profiledata, alt, profname):        
+    def set_profile(self, profiledata, alt, profname):
 
         self.data.set_data('index', alt)
         self.data.set_data('value', profiledata)
