@@ -26,9 +26,9 @@ from chaco.tools.api import LineInspector, ZoomTool
 from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
-from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
+from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str, Float
 from traitsui.api import Item, UItem, View, HGroup, VGroup, Label
-from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
+from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator, OKCancelButtons
 from enable.api import ComponentEditor
 
 from pyface.api import MessageDialog, ImageResource
@@ -73,6 +73,21 @@ def add_date_axis(plot):
     plot.underlays.append(bottom_axis)
 
 
+class AxisRange(HasTraits):
+    
+    ymin = Float(0, label='Min altitude [km]')
+    ymax = Float(15, label='Max altitude [km]')
+    view = View(Item('ymin'), Item('ymax'), buttons=OKCancelButtons)
+
+    def __init__(self, ymin, ymax):
+        self.ymin = ymin
+        self.ymax = ymax
+
+    def range(self):
+        return self.ymin, self.ymax
+    
+    
+
 class Rhi(HasTraits):
     
     data_list = List([])
@@ -93,6 +108,7 @@ class Rhi(HasTraits):
     reset_zoom = Button('Reset Zoom')
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
+    adjust_axis = Button('Adjust Axis')
     
     open_file_button = Button('Open File...')
     open_folder_button = Button('Open Folder...')
@@ -116,12 +132,13 @@ class Rhi(HasTraits):
             HGroup(
                 UItem('data_type', visible_when='len(seldata) > 1'),
                 UItem('seldata', springy=True),
-                Label('/', springy=True, visible_when='data_type=="Ratio"'),
+                Label('/', visible_when='data_type=="Ratio"'),
                 UItem('denum_seldata', springy=True, visible_when='data_type=="Ratio"')
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
                 UItem('show_profile'),
+                UItem('adjust_axis'),
                 UItem('reset_zoom'),
                 UItem('scale_less'),
                 UItem('scale_more'),
@@ -158,6 +175,20 @@ class Rhi(HasTraits):
             self.open_data(data_source)
                 
 
+    def _adjust_axis_fired(self):
+        '''
+        opens a dialog to select the vertical axis boundaries
+        '''
+        
+        axisrange = AxisRange(*self.lidardata.alt_range)
+        axisrange.configure_traits(kind='modal')
+        # here the user clicked on ok
+        ymin, ymax = axisrange.range()
+        ymin = np.max([self.lidardata.alt_range[0], ymin])
+        ymax = np.min([self.lidardata.alt_range[1], ymax])        
+        self.pcolor.value_range.set_bounds(ymin, ymax)
+
+
     def _open_file_button_fired(self):
         self.handler.open_file(None)
         
@@ -187,7 +218,6 @@ class Rhi(HasTraits):
 
         self.pcolor_set_data(self.lidardata.data[self.seldata].T)
         
-                
         
     def update_data_list(self, data_type):
         
