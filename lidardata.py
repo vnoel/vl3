@@ -75,7 +75,6 @@ class LidarData(object):
             self.alt = data['alt']
             self.date = data['date']
             self.data_source = from_source
-            self.has_ratio = data['has_ratio']
             self.alt_range = (np.min(self.alt), np.max(self.alt))
 
             data = self._data_regrid_time()

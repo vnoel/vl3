@@ -5,11 +5,11 @@ import glob
 from scipy.io.netcdf import netcdf_file
 import numpy as np
 from datetime import datetime
-from util import signal_ratio, lidar_multiple_files_read, read_formats
+from util import lidar_multiple_files_read, read_formats
 from util import read_supported_vertical_variables, read_supported_horizontal_variables
 
 # contains the format definitions
-lidar_variables, lidar_ratios = read_formats()
+lidar_variables = read_formats()
 vertical_variables = read_supported_vertical_variables()
 horizontal_variables = read_supported_horizontal_variables()
 
@@ -123,14 +123,6 @@ def netcdf_read_data(nc, format):
     return lidar_data
     
     
-def lidar_data_compute_ratios(lidar_data, format):
-    
-    for ratio in lidar_ratios[format]:
-        num_name = lidar_ratios[format][ratio]['numerator']
-        denum_name = lidar_ratios[format][ratio]['denominator']
-        lidar_data[ratio] = signal_ratio(lidar_data[denum_name], lidar_data[num_name])
-    
-    
 def lidar_netcdf_file_read(source, format):
     
     nc = netcdf_file(source)
@@ -141,13 +133,7 @@ def lidar_netcdf_file_read(source, format):
         
     nc.close()
     
-    if format in lidar_ratios:
-        lidar_data_compute_ratios(lidar_data, format)
-        has_ratio = True
-    else:
-        has_ratio = False
-    
-    data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format, 'has_ratio':has_ratio}
+    data = {'time':time, 'alt':alt, 'data':lidar_data, 'date':date, 'filetype':'netcdf', 'instrument':format}
     
     return data
 

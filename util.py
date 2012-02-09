@@ -89,8 +89,7 @@ def print_supported_formats():
     
 def read_formats():
     lidar_variables = _read_variable_in_formats('lidar_variables')
-    lidar_ratios = _read_variable_in_formats('lidar_ratios')
-    return lidar_variables, lidar_ratios
+    return lidar_variables
     
     
 def read_supported_vertical_variables():

@@ -10,7 +10,7 @@ Copyright (c) 2011 LMD/CNRS. All rights reserved.
 import glob
 import unittest
 from datetime import datetime
-from util import signal_ratio, lidar_multiple_files_read, lidar_data_merge
+from util import lidar_multiple_files_read, lidar_data_merge
 import numpy as np
 
 
@@ -107,23 +107,7 @@ def lna_binary_file_read(lnafile):
     r /= 1e3
     r, data = cut_off_high_altitudes(r, data)
 
-    # create depolarization + color ratio
-    
-    start = 1 if fov.startswith('NF') else 6
-
-    namepara = 'p%02d - Pr2 532nm ' % start + fov
-    nameperp = 'p%02d - Pr2 532nm crosspol ' % (start + 2) + fov
-    # add depolarization
-    depol532 = signal_ratio(data[namepara], data[nameperp])
-    data['p%02d - Depolarization Ratio 532nm ' % (start + 3) + fov] = depol532
-    
-    # add color ratio
-    total532 = data[namepara] + data[nameperp]
-    total1064 = data['p%02d - Pr2 1064nm ' % (start + 1) + fov]
-    cr = signal_ratio(total532, total1064)
-    data['p%02d - Color Ratio 1064nm / 532nm ' % (start + 4) + fov] = cr
-    
-    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary', 'has_ratio':True}
+    lna_data = {'time':time, 'alt':r, 'data':data, 'date':time[0], 'filetype':'binary'}
         
     return lna_data
     
