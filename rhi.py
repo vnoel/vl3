@@ -201,7 +201,11 @@ class Rhi(HasTraits):
             return
             
         self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + str(self.lidardata.date.date())
-        self.plot_title = str(self.lidardata.date.date()) + ' : ' + self.seldata
+        if self.data_type=='Ratio':
+            self.plot_title = str(self.lidardata.date.date()) + ' : Ratio ' + self.seldata + '/' + self.denum_seldata
+        else:
+            self.plot_title = str(self.lidardata.date.date()) + ' : ' + self.seldata
+            
         self.pcolor.title = self.plot_title
         # colorbar titles
         ctitle = self.seldata
