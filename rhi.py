@@ -27,7 +27,7 @@ from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
 from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
-from traitsui.api import Item, UItem, View, HGroup, VGroup
+from traitsui.api import Item, UItem, View, HGroup, VGroup, Label
 from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
@@ -38,6 +38,9 @@ from profile import ProfilePlot, ProfileController
 
 from config import minor_version, major_version
 from config import basesirta_path
+
+from util import signal_ratio
+
 
 # change factor for colormap caxis
 cmap_change_factor = 2.
@@ -82,6 +85,8 @@ class Rhi(HasTraits):
     
     data_type = Enum('Signal', 'Ratio')
     seldata = Enum(values='data_list')
+    denum_seldata = Enum(values='data_list')
+    
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
     log_scale = Bool
@@ -103,12 +108,16 @@ class Rhi(HasTraits):
             springy=True,
             visible_when='plot_title == ""'
         ),
-        # this bit of the view shows when there is data
+        
+        # this bit of the view shows when data is opened
         # ie after file/folder loading
+        
         VGroup(
             HGroup(
-                UItem('data_type', visible_when='lidardata.has_ratio is True'),
+                UItem('data_type', visible_when='len(seldata) > 1'),
                 UItem('seldata', springy=True),
+                Label('/', springy=True, visible_when='data_type=="Ratio"'),
+                UItem('denum_seldata', springy=True, visible_when='data_type=="Ratio"')
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
@@ -182,15 +191,7 @@ class Rhi(HasTraits):
         
     def update_data_list(self, data_type):
         
-        data_list = []
-        for key in self.lidardata.data.keys():
-            if 'Ratio' in key:
-                if data_type is 'Ratio':
-                    data_list.append(key)
-            else:
-                if data_type is not 'Ratio':
-                    data_list.append(key)
-                    
+        data_list = self.lidardata.data.keys()
         data_list.sort()
         self.data_list = data_list
         
@@ -281,20 +282,25 @@ class Rhi(HasTraits):
     def _data_type_changed(self):
         
         self.update_data_list(self.data_type)
-        self.seldata = self.data_list[0]
         if self.data_type is 'Ratio':
+            self.seldata = self.data_list[1]
+            self.denum_seldata = self.data_list[0]
             self.log_scale = False
+        else:
+            self.seldata = self.data_list[0]
         
         
     def _seldata_changed(self):
         
         if self.pcolor_data is None:
             return 
-
-        if self.data_type is 'Ratio':
-            self.log_scale = False
             
-        data_to_show = self.lidardata.data[self.seldata].T.copy()
+        if self.data_type is 'Ratio':
+            print 'Data is ratio ', self.seldata, '/', self.denum_seldata
+            data_to_show = signal_ratio(self.lidardata.data[self.denum_seldata], self.lidardata.data[self.seldata]).T
+            self.log_scale = False
+        else:
+            data_to_show = self.lidardata.data[self.seldata].T.copy()
         
         if self.log_scale:
             # to avoid error message when doing log10(x<0)
