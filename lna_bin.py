@@ -56,7 +56,7 @@ def _improve_channel_names(names, fov_type):
     create long versions of channel names   
     """
     
-    start = 1 if fov_type.startswith('NF') else 6
+    start = 1 if fov_type.startswith('NF') else 4
     newnames = []
     for name in names:
         newname = _improve_channel_name(name, start, fov_type)
@@ -75,7 +75,7 @@ def cut_off_high_altitudes(r, data, max_alt=15.):
     return r[idx], data
             
     
-def lna_binary_file_read(lnafile):
+def lna_binary_file_read(lnafile, format):
     """
     read lna data from a file in binary format
     fix names of datasets
