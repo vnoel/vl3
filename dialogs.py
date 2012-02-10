@@ -10,12 +10,13 @@ from traits.api import HasTraits, Float
 from traitsui.api import Item, View
 from traitsui.menu import OKCancelButtons
 
-class AxisRange(HasTraits):
-    
-    ymin = Float(0, label='Min altitude [km]')
-    ymax = Float(15, label='Max altitude [km]')
-    view = View(Item('ymin'), Item('ymax'), buttons=OKCancelButtons)
 
+class _TwoValuesSelectorDialog(HasTraits):
+    
+    ymin = Float()
+    ymax = Float()
+    view = View(Item('ymin'), Item('ymax'), buttons=OKCancelButtons, title='Adjust Values')
+    
     def __init__(self, ymin, ymax):
         self.ymin = ymin
         self.ymax = ymax
@@ -23,6 +24,17 @@ class AxisRange(HasTraits):
     def range(self):
         return self.ymin, self.ymax
     
+
+class AxisRange(_TwoValuesSelectorDialog):
+    
+    ymin = Float(label='Min altitude [km]')
+    ymax = Float(label='Max altitude [km]')
+        
+
+class ColorScaleRange(_TwoValuesSelectorDialog):
+    
+    ymin = Float(label='Min value')
+    ymax = Float(label='Max value')
 
 
 def main():
