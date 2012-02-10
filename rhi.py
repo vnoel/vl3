@@ -39,7 +39,7 @@ from profile import ProfilePlot, ProfileController
 from config import minor_version, major_version
 from config import basesirta_path
 
-from dialogs import AxisRange
+from dialogs import AxisRange, ColorScaleRange
 from util import signal_ratio
 
 
@@ -62,6 +62,7 @@ menubar=MenuBar(
         Action(name='New view', action='new_view', enabled_when='plot_title != ""'),
         Separator(),
         Action(name='Adjust axis...', action='adjust_axis'),
+        Action(name='Adjust color scale...', action='adjust_color_scale'),
         name='View',
     ),
     Menu(
@@ -176,6 +177,14 @@ class Rhi(HasTraits):
         ymin = np.max([self.lidardata.alt_range[0], ymin])
         ymax = np.min([self.lidardata.alt_range[1], ymax])        
         self.pcolor.value_range.set_bounds(ymin, ymax)
+        
+        
+    def _adjust_color_scale_fired(self):
+        
+        crange = [self.img.color_mapper.range.low, self.img.color_mapper.range.high]
+        colorscale = ColorScaleRange(*crange)
+        colorscale.configure_traits(kind='modal')
+        ymin, ymax = colorscale.range()
 
 
     def _open_file_button_fired(self):

@@ -74,6 +74,9 @@ class RhiController(Handler):
         
     def adjust_axis(self, ui_info):
         self.view._adjust_axis_fired()
+        
+    def adjust_color_scale(self, ui_info):
+        self.view._adjust_color_scale_fired()
 
     
     def about_dialog(self, ui_info):
