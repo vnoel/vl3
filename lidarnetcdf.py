@@ -31,6 +31,7 @@ def find_horizontal_variable(nc):
 def lidar_netcdf_folder_read(source, format):
     files = glob.glob(source + '/' + format + '*.nc')
     lidar_data = lidar_multiple_files_read(files, lidar_netcdf_file_read, format)
+    lidar_data['filetype'] = 'netcdf'
     return lidar_data
     return None
     

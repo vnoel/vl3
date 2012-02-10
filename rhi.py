@@ -101,6 +101,9 @@ class Rhi(HasTraits):
     scale_less = Button('Scale--')
     adjust_axis = Button('Adjust Axis')
     
+    # if "binary", special-case for old binary lna
+    filetype = Str('')
+    
     open_file_button = Button('Open File...')
     open_folder_button = Button('Open Folder...')
 
@@ -134,7 +137,7 @@ class Rhi(HasTraits):
                 UItem('scale_less'),
                 UItem('scale_more'),
                 Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
-                Item('range_correct', label='range-correct data', visible_when="data['filetype']=='binary'")
+                Item('range_correct', label='range-correct data', visible_when='"binary" in filetype and data_type!="Ratio"')
             ),
             visible_when='plot_title != ""'
         ),
@@ -187,6 +190,7 @@ class Rhi(HasTraits):
         colorscale = ColorScaleRange(*crange)
         colorscale.configure_traits(kind='modal')
         ymin, ymax = colorscale.range()
+        self.img.color_mapper.range.set_bounds(ymin, ymax)
 
 
     def _open_file_button_fired(self):
@@ -213,6 +217,12 @@ class Rhi(HasTraits):
         self.lidardata = lidardata
                 
         self.data_type = 'Signal'
+        
+        # get file type (netcdf or binary)
+        self.filetype = self.lidardata.filetype
+        if self.filetype != 'binary':
+            self.range_correct = False
+            
         self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
 
@@ -338,8 +348,14 @@ class Rhi(HasTraits):
             print 'Data is ratio ', self.seldata, '/', self.denum_seldata
             data_to_show = signal_ratio(self.lidardata.data[self.denum_seldata], self.lidardata.data[self.seldata]).T
             self.log_scale = False
+            self.range_correct = False
         else:
             data_to_show = self.lidardata.data[self.seldata].T.copy()
+        
+        if self.range_correct:
+            r2 = np.power(self.lidardata.alt, 2)
+            for i in np.r_[0:data_to_show.shape[1]]:
+                data_to_show[:,i] = data_to_show[:,i] * r2
         
         if self.log_scale:
             # to avoid error message when doing log10(x<0)
@@ -347,18 +363,25 @@ class Rhi(HasTraits):
             idx_neg = data_to_show <= 0
             data_to_show[idx_pos] = np.log10(data_to_show[idx_pos])
             data_to_show[idx_neg] = np.nan
-            
+                        
         self.pcolor_set_data(data_to_show)
         
         
     def _profile_data(self, iprof):
+
         profile_data = self.lidardata.data[self.seldata][iprof,:].copy()
+
+        if self.range_correct:
+            r2 = np.power(self.lidardata.alt, 2)
+            profile_data *= r2            
+            
         if self.log_scale:
             # little dance to avoid warnings for log10(x<0)
             idx_pos = profile_data > 0
             idx_neg = profile_data <= 0
             profile_data[idx_pos] = np.log10(profile_data[idx_pos])
             profile_data[idx_neg] = np.nan
+
         return profile_data
         
         
@@ -415,6 +438,9 @@ class Rhi(HasTraits):
     
     
     def _log_scale_changed(self):
+        self._seldata_changed()
+        
+    def _range_correct_changed(self):
         self._seldata_changed()
     
     

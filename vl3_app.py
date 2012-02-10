@@ -13,6 +13,7 @@ Takes care of creating menus and stuff.
 
 
 import sys
+import numpy as np
 
 from rhi import Rhi
 from controller import RhiController
@@ -22,6 +23,8 @@ from config import major_version, minor_version
 
     
 if __name__ == '__main__':
+    
+    np.seterr(all='ignore')
     
     if len(sys.argv) > 1:
         yagfile = sys.argv[1]

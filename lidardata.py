@@ -61,7 +61,7 @@ class LidarData(object):
                 if folder:
                     data = lna_binary_folder_read(from_source)
                 else:
-                    data = lna_binary_file_read(from_source)
+                    data = lna_binary_file_read(from_source, format)
 
             else:
                 # general case netcdf format
@@ -74,13 +74,14 @@ class LidarData(object):
             self.datetime = data['time']
             self.alt = data['alt']
             self.date = data['date']
+            self.filetype = data['filetype']
             self.data_source = from_source
             self.alt_range = (np.min(self.alt), np.max(self.alt))
-
-            data = self._data_regrid_time()
-                    
+            
+            data = self._data_regrid_time()                    
             self.epochtime = mdates.num2epoch(mdates.date2num(self.datetime))
             self.epochtime_range = np.min(self.epochtime), np.max(self.epochtime)
+            
 
 
     def _data_regrid_time(self):
@@ -116,7 +117,7 @@ class LidarData(object):
                     newk[i, :] = data[k][iprof, :]
             newdata[k] = newk
 
-        self.time = newtime
+        self.datetime = newtime
         self.data = newdata
 
 
