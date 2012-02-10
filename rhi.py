@@ -26,9 +26,9 @@ from chaco.tools.api import LineInspector, ZoomTool
 from chaco.scales.api import CalendarScaleSystem
 from chaco.scales_tick_generator import ScalesTickGenerator
 
-from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str, Float
+from traits.api import HasTraits, Instance, Button, Bool, Enum, List, Str
 from traitsui.api import Item, UItem, View, HGroup, VGroup, Label
-from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator, OKCancelButtons
+from traitsui.menu import Menu, MenuBar, CloseAction, Action, Separator
 from enable.api import ComponentEditor
 
 from pyface.api import MessageDialog, ImageResource
@@ -39,6 +39,7 @@ from profile import ProfilePlot, ProfileController
 from config import minor_version, major_version
 from config import basesirta_path
 
+from dialogs import AxisRange
 from util import signal_ratio
 
 
@@ -72,20 +73,6 @@ def add_date_axis(plot):
     bottom_axis = chaco.PlotAxis(plot, orientation='bottom', tick_generator=ScalesTickGenerator(scale=CalendarScaleSystem()))
     plot.underlays.append(bottom_axis)
 
-
-class AxisRange(HasTraits):
-    
-    ymin = Float(0, label='Min altitude [km]')
-    ymax = Float(15, label='Max altitude [km]')
-    view = View(Item('ymin'), Item('ymax'), buttons=OKCancelButtons)
-
-    def __init__(self, ymin, ymax):
-        self.ymin = ymin
-        self.ymax = ymax
-
-    def range(self):
-        return self.ymin, self.ymax
-    
     
 
 class Rhi(HasTraits):
@@ -322,6 +309,11 @@ class Rhi(HasTraits):
             self.log_scale = False
         else:
             self.seldata = self.data_list[0]
+        
+        
+    def _denum_seldata_changed(self):
+        
+        self._seldata_changed()
         
         
     def _seldata_changed(self):
