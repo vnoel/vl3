@@ -60,6 +60,8 @@ menubar=MenuBar(
     ),
     Menu(
         Action(name='New view', action='new_view', enabled_when='plot_title != ""'),
+        Separator(),
+        Action(name='Adjust axis...', action='adjust_axis'),
         name='View',
     ),
     Menu(

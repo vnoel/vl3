@@ -71,6 +71,9 @@ class RhiController(Handler):
             
         controller = RhiController(view=rhi)
         rhi.configure_traits(handler=controller)
+        
+    def adjust_axis(self, ui_info):
+        self.view._adjust_axis_fired()
 
     
     def about_dialog(self, ui_info):
