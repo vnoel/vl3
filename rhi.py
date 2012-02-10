@@ -95,6 +95,7 @@ class Rhi(HasTraits):
     container = Instance(chaco.HPlotContainer)
     show_profile = Button('Show profile')
     log_scale = Bool
+    range_correct = Bool
     reset_zoom = Button('Reset Zoom')
     scale_more = Button('Scale++')
     scale_less = Button('Scale--')
@@ -133,6 +134,7 @@ class Rhi(HasTraits):
                 UItem('scale_less'),
                 UItem('scale_more'),
                 Item('log_scale', label='Log Scale', visible_when='"Signal" in data_type'),
+                Item('range_correct', label='range-correct data', visible_when="data['filetype']=='binary'")
             ),
             visible_when='plot_title != ""'
         ),
