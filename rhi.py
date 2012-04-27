@@ -44,7 +44,7 @@ from util import signal_ratio
 
 
 # change factor for colormap caxis
-cmap_change_factor = 2.
+cmap_change_factor = 1.5
 
 menubar=MenuBar(
     Menu(
@@ -227,6 +227,7 @@ class Rhi(HasTraits):
             
         self.update_data_list(self.data_type)
         self.seldata = self.data_list[0]
+        self.directory_to_load = data_source
 
         self.pcolor_set_data(self.lidardata.data[self.seldata].T)
         
