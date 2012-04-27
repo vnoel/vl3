@@ -55,7 +55,7 @@ menubar=MenuBar(
         Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
         '_',
         Action(name='&Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
-        Action(name='Save Profile Plot...', action='save_profile', enabled_when='profileplot is not None'),
+        Action(name='Save Profile Plot...', action='save_profile', enabled_when='p rofileplot is not None'),
         # Action(name='Quit', action='quit', accelerator='Ctrl+Q'),
         name='&File',
     ),
@@ -155,7 +155,8 @@ class Rhi(HasTraits):
         self.pcolor_data.set_data('image', np.zeros([1,1]))
         self.pcolor, self.container, self.colorbar = self.pcolor_create(self.pcolor_data)
 
-        self.save_image_file = os.getcwd()
+        self.save_image_file = os.getcwd() + '/figure.png'
+        self.save_profile_file = os.getcwd() + '/profile.png'
 
         if data_source is None:
             if os.path.isdir(base_folder):

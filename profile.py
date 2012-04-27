@@ -22,7 +22,7 @@ class ProfilePlot(HasTraits):
         VGroup(
             UItem('profileplot', width=300, height=500, editor=ComponentEditor()),
         ),
-        resizable=True,  vvv
+        resizable=True,
         title='Profile',
     )
         
