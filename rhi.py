@@ -55,6 +55,7 @@ menubar=MenuBar(
         Action(name='Open data directory...', action='open_dir', accelerator='Shift+Ctrl+O'),
         '_',
         Action(name='&Save Plot...', action='save', accelerator='Ctrl+S', enabled_when='plot_title !=""'),
+        Action(name='Save Profile Plot...', action='save_profile', enabled_when='profileplot is not None'),
         # Action(name='Quit', action='quit', accelerator='Ctrl+Q'),
         name='&File',
     ),
@@ -126,7 +127,7 @@ class Rhi(HasTraits):
             HGroup(
                 UItem('data_type', visible_when='len(seldata) > 1'),
                 UItem('seldata', springy=True),
-                Label('/', visible_when='data_type=="Ratio"'),
+                Label('/', visible_when='"Ratio" in data_type'),
                 UItem('denum_seldata', springy=True, visible_when='data_type=="Ratio"')
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
@@ -445,9 +446,10 @@ class Rhi(HasTraits):
     
     
     def save_image(self, save_image_file):
-        window_size = self.pcolor.outer_bounds
-        gc = chaco.PlotGraphicsContext(window_size)
-        gc.render_component(self.pcolor)
+        window_size = self.container.outer_bounds
+        print window_size
+        gc = chaco.PlotGraphicsContext([window_size[0]+1, window_size[1]+1])
+        gc.render_component(self.container)
         gc.save(save_image_file)
         
         

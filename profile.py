@@ -22,7 +22,7 @@ class ProfilePlot(HasTraits):
         VGroup(
             UItem('profileplot', width=300, height=500, editor=ComponentEditor()),
         ),
-        resizable=True,
+        resizable=True,  vvv
         title='Profile',
     )
         
@@ -43,6 +43,7 @@ class ProfilePlot(HasTraits):
         self.parent = parent
         if profiledata is not None and alt is not None and profname is not None:
             self.set_profile(profiledata, alt, profname)
+        
             
     def set_profile(self, profiledata, alt, profname):        
 
@@ -50,6 +51,16 @@ class ProfilePlot(HasTraits):
         self.data.set_data('value', profiledata)
         self.profiledata = profiledata
         self.profileplot.title = 'Profile ' + str(profname)
+        
+        
+    def save_image(self, save_image_file):
+        
+        window_size = self.profileplot.outer_bounds
+        print window_size
+        gc = chaco.PlotGraphicsContext([window_size[0]+1, window_size[1]+1])
+        gc.render_component(self.profileplot)
+        gc.save(save_image_file)
+        
 
         
 class ProfileController(Handler):

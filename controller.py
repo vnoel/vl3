@@ -48,10 +48,18 @@ class RhiController(Handler):
         
         
     def save(self, ui_info):
+        print self.view.save_image_file
         fd = FileDialog(action='save as', default_path=self.view.save_image_file)
         if fd.open() == OK:
             print 'saving to ', fd.path
             self.view.save_image(fd.path)
+            
+            
+    def save_profile(self, ui_info):
+        fd = FileDialog(action='save as', default_path=self.view.save_image_file)
+        if fd.open() == OK:
+            print 'saving profile plot to ', fd.path
+            self.view.profileplot.save_image(fd.path)
             
         
     def new_empty_view(self, ui_info):
