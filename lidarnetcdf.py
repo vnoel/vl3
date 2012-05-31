@@ -53,7 +53,8 @@ def read_variable(nc, varproperties):
                 else:
                     found.append(False)
         if all(found):
-            variable = np.array(netcdfvar[:,:].copy(), dtype=np.float16)
+            
+            variable = np.array(netcdfvar[:,:].copy())
 
             if hasattr(netcdfvar, 'missing_value'):
                 idx = (variable==netcdfvar.missing_value)
@@ -76,9 +77,9 @@ def netcdf_read_time(nc):
     seconds = hourfraction * 3600 - minutes * 60.
 
     if hasattr(nc, 'year'):
-        y = nc.year
-        m = nc.month
-        d = nc.day
+        y = int(nc.year)
+        m = int(nc.month)
+        d = int(nc.day)
     else:
         print 'This netcdf file has not global attribute year'
         print 'setting default date as 2006, 1, 1'
