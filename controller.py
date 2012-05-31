@@ -93,7 +93,7 @@ class RhiController(Handler):
         img = ImageResource('about', search_path=[os.getcwd()+'/', './', '/users/noel/vl3/'])
         text=['VL3 - View Lidar 3 - v%d.%d\n' % (major_version, minor_version), 
             u'© VNoel 2001-2011 - LMD/CNRS/IPSL\n', 
-            'Based on input and help from M. Chiriaco, A. Delaval, Y. Morille, C. Pietras, S. Turquety.',
+            'Based on input and help from M. Chiriaco, A. Delaval, L. Klenov, Y. Morille, C. Pietras, S. Turquety.',
             'Using the Enthought Tool Suite (ETS), Python.']
         dlg = AboutDialog(parent=ui_info.ui.control, additions=text, image=img)
         dlg.open()
