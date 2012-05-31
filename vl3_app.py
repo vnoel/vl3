@@ -26,7 +26,7 @@ if __name__ == '__main__':
     
     np.seterr(all='ignore')
 
-    print 'vl3 - v.%d.%d' % (major_version, minor_version)
+    print 'vl3 - v.%d.%3.1f' % (major_version, minor_version)
     print_supported_formats()
     
     datafile = None
