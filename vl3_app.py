@@ -12,8 +12,8 @@ Takes care of creating menus and stuff.
 """
 
 
-import sys
 import numpy as np
+import os, sys
 
 from rhi import Rhi
 from controller import RhiController
@@ -25,17 +25,18 @@ from config import major_version, minor_version
 if __name__ == '__main__':
     
     np.seterr(all='ignore')
-    
-    if len(sys.argv) > 1:
-        yagfile = sys.argv[1]
-    else:
-        yagfile = None
-    
+
     print 'vl3 - v.%d.%d' % (major_version, minor_version)
     print_supported_formats()
     
-#    yagfile = '/Users/vnoel/Code/vl3/test_data/netcdf/lna_1a_PR2_v02_20040319_100000_60.nc'
+    datafile = None
+
+    if 'pistachio' in os.uname()[1]:
+        datafile = '/Users/vnoel/Code/vl3_test_data/netcdf/lna_1a_PR2_v02_20040319_100000_60.nc'
     
-    rhi = Rhi(yagfile)
+    if len(sys.argv) > 1:
+        datafile = sys.argv[1]
+    
+    rhi = Rhi(datafile)
     controller = RhiController(view=rhi)
     rhi.configure_traits(handler=controller)
