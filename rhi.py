@@ -132,8 +132,7 @@ class Rhi(HasTraits):
             HGroup(
                 UItem('data_type', visible_when='len(seldata) > 1'),
                 UItem('seldata', springy=True),
-                Label('/', visible_when='"Ratio" in data_type'),
-                UItem('denum_seldata', springy=True, visible_when='data_type=="Ratio"')
+                Item('denum_seldata', springy=True, visible_when='data_type=="Ratio"', label='/ ')
             ),
             UItem('container', editor=ComponentEditor(size=(800, 400))),
             HGroup(
@@ -257,7 +256,7 @@ class Rhi(HasTraits):
             self.plot_title = str(self.lidardata.date.date()) + ' : ' + self.seldata
             
         self.pcolor.title = self.plot_title
-        self.window_title = 'View Lidar 3 v%d.%d' % (major_version, minor_version) + ' - ' + self.plot_title
+        self.window_title = 'View Lidar 3 v%d.%3.1f' % (major_version, minor_version) + ' - ' + self.plot_title
         
         # colorbar title
         self.colorbar._axis.title = self.seldata+' [Log10]' if self.log_scale else self.seldata
