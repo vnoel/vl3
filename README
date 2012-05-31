@@ -1,5 +1,7 @@
 View Lidar 3
-v0.7
+v0.9.1
 
 VNoel 2011 - LMD/CNRS/IPSL
 
+Based on input and help from M. Chiriaco, A. Delaval, L. Klenov, Y. Morille, C. Pietras, S. Turquety.
+Using the Enthought Tool Suite (ETS), Python.
