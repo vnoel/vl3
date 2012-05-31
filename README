@@ -5,3 +5,28 @@ VNoel 2011 - LMD/CNRS/IPSL
 
 Based on input and help from M. Chiriaco, A. Delaval, L. Klenov, Y. Morille, C. Pietras, S. Turquety.
 Using the Enthought Tool Suite (ETS), Python.
+
+What's new
+
+0.9.1 (2012-05-31)
+- new data formats : normLNA1hpm30min, strat_2a_stratflagNF-5m_v03
+- don't impose variable precision when reading data from netcdf file
+- convert year/month/date netcdf metadata to int (sometimes they're strings)
+
+0.9 (2012-04-12)
+- profile images can be saved 
+- saved figures now include colorbars
+- the last used folder is remembered
+
+0.8 (2012-03-10)
+- new option "adjust color scale" in the View menu to select color scale by hand
+- new option "adjust axis" in the View menu (mirrors the main window button)
+- checkbox "range-correct data" for binary yag files when viewing signal (not ratio)
+- fixed a few bugs
+
+0.3 (2011-10-19)
+- description of data format for netcdf files is now code-independent and happens in the dataformats file
+- new data format : ALS files
+
+0.2 (2011-09-08)
+- first public release
